@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF2SVG - Google Sheets to Figma</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="container">
+        <header>
+            <h1 class="logo">PDF<span>2</span>SVG</h1>
+            <p class="subtitle">Seamlessly import Google Sheets into Figma</p>
+        </header>
+
+        <main>
+            <div id="drop-zone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Drag & Drop your Google Sheet export (PDF)</p>
+                    <span>or click to browse files</span>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                </div>
+            </div>
+
+            <div id="status-container" class="status-container hidden">
+                <div class="spinner"></div>
+                <p id="status-text">Converting PDF to SVG...</p>
+            </div>
+
+            <div id="output-container" class="output-container hidden">
+                <h2>Generated SVGs</h2>
+                <div id="svg-list" class="svg-list"></div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="steps">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <p>Export Google Sheet as <strong>PDF</strong></p>
+                </div>
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <p>Drop PDF here to convert to <strong>SVG</strong></p>
+                </div>
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <p>Paste SVG into <strong>Figma</strong></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
