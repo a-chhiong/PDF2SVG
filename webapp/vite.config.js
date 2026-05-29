@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'src', // Set Vite's project root directory to the src/ folder
+  base: './',
   build: {
     target: 'es2022',
-    outDir: '../dist', // Output to webapp/dist/ (next to src/)
+    outDir: 'dist', // Output to webapp/dist/
     emptyOutDir: true,  // Automatically clear the output directory before building
     minify: 'esbuild',
     rollupOptions: {

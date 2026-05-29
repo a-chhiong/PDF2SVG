@@ -132,8 +132,9 @@ export class GlyphVectoriser {
 
         const promise = (async () => {
             try {
-                const res = await fetch(`fonts/${fontFile}`);
-                if (!res.ok) throw new Error(`Local font not found: ${fontFile} (HTTP ${res.status})`);
+                const fontUrl = new URL(`../assets/fonts/${fontFile}`, import.meta.url).href;
+                const res = await fetch(fontUrl);
+                if (!res.ok) throw new Error(`Local font not found: ${fontFile} at ${fontUrl} (HTTP ${res.status})`);
 
                 const buffer = await res.arrayBuffer();
                 const font = window.opentype.parse(buffer);
@@ -244,8 +245,9 @@ export class GlyphVectoriser {
             return this.fontCache.get('local:' + fontFile);
         }
         try {
-            const res = await fetch(`fonts/${fontFile}`);
-            if (!res.ok) throw new Error(`Not found: ${fontFile}`);
+            const fontUrl = new URL(`../assets/fonts/${fontFile}`, import.meta.url).href;
+            const res = await fetch(fontUrl);
+            if (!res.ok) throw new Error(`Not found: ${fontFile} at ${fontUrl}`);
             const buffer = await res.arrayBuffer();
             const font = window.opentype.parse(buffer);
             this.fontCache.set('local:' + fontFile, font);

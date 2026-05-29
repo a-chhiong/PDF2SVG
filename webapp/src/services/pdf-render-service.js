@@ -224,18 +224,16 @@ function _injectGoogleFontsFaces(svgElement, langKeys) {
         svgElement.insertBefore(defs, svgElement.firstChild);
     }
 
-    // Use window.location.origin so font URLs resolve correctly inside blob: iframe
-    const fontBase = window.location.origin;
-
     const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     let css = '';
 
     for (const key of langKeys) {
         const entry = LOCAL_FONT_FILES[key];
         if (entry) {
+            const fontUrl = new URL(`../assets/fonts/${entry.file}`, import.meta.url).href;
             css += `@font-face {
   font-family: '${entry.family}';
-  src: url('${fontBase}/fonts/${entry.file}') format('woff');
+  src: url('${fontUrl}') format('woff');
   font-weight: 400 700;
   font-style: normal;
 }\n`;

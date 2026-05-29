@@ -35,28 +35,30 @@ Switch between two core render pipelines instantly in the UI with sub-millisecon
 
 ```
 webapp/
-├── package.json         → NPM scripts & Vite dev dependencies (at root)
-├── vite.config.js       → Turnkey Vite production configuration (at root)
-├── dist/                → Compiled, minified output assets folder (sibling to src/)
-│
-└── src/                 → Raw, editable source code
-    ├── index.html       → SPA entry HTML point
-    ├── style.css        → Glassmorphic custom theme, loaders, and variables
-    ├── main.js          → Main app bootstrapper & Custom Elements registration
-    │
-    ├── controllers/     → Lit Reactive Controllers (MVVM State Machine)
-    │   └── pdf-conversion-controller.js
-    │
-    ├── components/      → Lit Component UI Views (Light DOM templates)
-    │   ├── app-root.js             → Layout shell and mode toggle toolbar
-    │   ├── file-drop-zone.js       → Drag-and-drop listener and uploader
-    │   ├── svg-viewer.js           → SVG pan & zoom (svg-pan-zoom) canvas lists
-    │   └── conversion-progress.js  → Animated progressive loading status
-    │
-    └── services/        → Core business logic (pure JS classes)
-        ├── font-resolver.js        → Range matching of PDF fonts to Noto styles
-        ├── glyph-vectoriser.js     → opentype.js binary parsing & outline generator
-        └── pdf-render-service.js   → Operator list shapes & text coordinator
+├── node_modules/
+├── public/                 → Static assets served directly at root (favicons, robots.txt, etc.)
+│   └── favicon.ico         → Custom circular brand icon
+├── src/                    → Raw, editable source code
+│   ├── assets/             → Fonts, icons, and images compiled/hashed by Vite
+│   │   ├── fonts/          → Local full-size Noto CJK and Latin fallback WOFF files
+│   │   └── images/         → Graphic assets
+│   ├── components/         → Lit Component UI Views (Light DOM templates)
+│   │   ├── app-root.js             → Layout shell and mode toggle toolbar
+│   │   ├── file-drop-zone.js       → Drag-and-drop listener and uploader
+│   │   ├── svg-viewer.js           → SVG pan & zoom (svg-pan-zoom) canvas lists
+│   │   └── conversion-progress.js  → Animated progressive loading status
+│   ├── controllers/        → Lit Reactive Controllers (MVVM State Machine)
+│   │   └── pdf-conversion-controller.js
+│   ├── services/           → Core business logic (pure JS classes)
+│   │   ├── font-resolver.js        → Range matching of PDF fonts to Noto styles
+│   │   ├── glyph-vectoriser.js     → opentype.js binary parsing & outline generator
+│   │   └── pdf-render-service.js   → Operator list shapes & text coordinator
+│   ├── main.js             → Main app bootstrapper & Custom Elements registration
+│   └── style.css           → Glassmorphic custom theme, loaders, and variables
+├── .gitignore              → Standard Git ignore patterns (ignores node_modules/, dist/, etc.)
+├── index.html              → SPA entry HTML point [ENTRYPOINT] (kept at root)
+├── package.json            → NPM scripts & Vite dependencies (at root)
+└── vite.config.js          → Turnkey Vite production configuration (at root)
 ```
 
 ---
@@ -64,6 +66,9 @@ webapp/
 ## 🚀 Getting Started & Local Commands
 
 To install dependencies and run the webapp locally:
+
+> [!TIP]
+> **Windows PowerShell Users:** If you receive a script signing error (e.g. `npm.ps1 cannot be loaded because it is not digitally signed`), run commands using the `npm.cmd` wrapper (e.g., `npm.cmd install`, `npm.cmd run dev`, `npm.cmd run build`) or temporarily change the execution policy by running `Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process` in your shell.
 
 ### 1. Install Dependencies
 ```bash
@@ -82,14 +87,15 @@ npm run dev
 Open `http://localhost:3000` in the browser to develop.
 
 ### 3. Production Bundling & Minification
-Triggers a high-efficiency compilation that packs standard `Lit`, our controllers, views, and shaper logic into a single optimized static bundle:
+Triggers a high-efficiency compilation that packs standard `Lit`, our controllers, views, shaper logic, and compiles/hashes local fallback fonts into a single optimized static bundle:
 ```bash
 npm run build
 ```
-Vite transforms and compiles all modules in **under 150ms**, producing a tiny, static bundle size:
-- **`dist/index.html`** (1.89 kB)
-- **`dist/assets/index.BdRFRLiA.css`** (3.64 kB)
-- **`dist/assets/index.IOjar4Gs.js`** (34.84 kB — **only 11.54 kB gzipped!**)
+Vite transforms and compiles all modules and asset links:
+- **`dist/index.html`** (1.57 kB)
+- **`dist/assets/index.[hash].css`** (3.64 kB)
+- **`dist/assets/index.[hash].js`** (40.07 kB)
+- **`dist/assets/noto-sans-[lang].[hash].woff`** (Vite-hashed dynamic local fallback fonts)
 
 ### 4. Preview the Production Build
 ```bash
