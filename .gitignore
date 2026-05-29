@@ -167,3 +167,5 @@ x86/
 .examples
 .idea
 .vscode
+.agents
+.orphanage

@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace PDF2SVGConsole.Interfaces;
+namespace PDF2SVG.Interfaces;
 
 public interface ICssStyleParser
 {

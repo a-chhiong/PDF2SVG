@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using PDF2SVG.Interfaces;
 using SkiaSharp;
-using PDF2SVGConsole.Interfaces;
 
-namespace PDF2SVGConsole.Services;
+namespace PDF2SVG.Services;
 
 /// <summary>
 /// Converts SVG <text> and <tspan> elements into pixel-perfect vector path outlines

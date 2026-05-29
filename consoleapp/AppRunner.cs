@@ -1,9 +1,7 @@
-using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
-using PDF2SVGConsole.Services;
+using PDF2SVG.Services;
 
-namespace PDF2SVGConsole;
+namespace PDF2SVG;
 
 public static class AppRunner
 {

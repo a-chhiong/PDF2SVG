@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using PDF2SVGConsole.Interfaces;
+using PDF2SVG.Interfaces;
 
-namespace PDF2SVGConsole.Services;
+namespace PDF2SVG.Services;
 
 /// <summary>
 /// Parses CSS class declarations embedded inside SVG <style> blocks into a structured,

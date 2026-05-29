@@ -5,17 +5,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>PDF2SVG</AssemblyName>
+    <RootNamespace>PDF2SVG</RootNamespace>
+    <PackageId>PDF2SVG</PackageId>
+    <Authors>PDF2SVG</Authors>
+    <Company>PDF2SVG</Company>
+    <Product>PDF2SVG</Product>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PdfToSvg.NET" Version="1.8.0" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="References\" />
   </ItemGroup>
 
 </Project>

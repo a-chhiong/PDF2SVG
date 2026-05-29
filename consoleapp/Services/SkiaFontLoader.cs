@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using PDF2SVGConsole.Interfaces;
+using PDF2SVG.Interfaces;
 using SkiaSharp;
 
-namespace PDF2SVGConsole.Services;
+namespace PDF2SVG.Services;
 
 /// <summary>
 /// Extracts and loads subsetted OpenType fonts embedded as base64-encoded data URIs inside the SVG's

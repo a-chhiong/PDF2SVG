@@ -1,8 +1,8 @@
 using System.Xml.Linq;
-using PDF2SVGConsole.Interfaces;
+using PDF2SVG.Interfaces;
 using PdfToSvg;
 
-namespace PDF2SVGConsole.Services;
+namespace PDF2SVG.Services;
 
 public class PdfToSvgConverter
 {

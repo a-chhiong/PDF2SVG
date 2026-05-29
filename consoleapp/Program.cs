@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using PDF2SVGConsole;
-using PDF2SVGConsole.Interfaces;
-using PDF2SVGConsole.Services;
+using PDF2SVG;
+using PDF2SVG.Interfaces;
+using PDF2SVG.Services;
 
 var services = new ServiceCollection();
 

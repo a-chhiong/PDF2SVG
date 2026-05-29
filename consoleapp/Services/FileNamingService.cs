@@ -1,8 +1,6 @@
-using System;
-using System.IO;
-using PDF2SVGConsole.Interfaces;
+using PDF2SVG.Interfaces;
 
-namespace PDF2SVGConsole.Services;
+namespace PDF2SVG.Services;
 
 /// <summary>
 /// Determines the final output file path for each converted SVG page, applying collision-safe
