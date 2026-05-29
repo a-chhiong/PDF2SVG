@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "stop": "pkill -f vite || true",
     "build": "vite build",
     "preview": "vite preview"
   },
