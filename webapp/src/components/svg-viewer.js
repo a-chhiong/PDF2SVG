@@ -55,7 +55,7 @@ export class SvgViewer extends LitElement {
     render() {
         return html`
             <div id="output-container" class="output-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; width: 100%;">
+                <div class="svg-viewer-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; width: 100%;">
                     <h2 style="margin: 0;">Generated SVGs</h2>
                     <button class="btn btn-secondary" style="border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); padding: 0.55rem 1rem; font-size: 0.85rem;" @click=${this._onRestart}>
                         <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -71,7 +71,7 @@ export class SvgViewer extends LitElement {
                     ${this.svgList.map(item => html`
                         <div class="svg-item" style="flex-direction: column; align-items: stretch; gap: 1rem;">
                             <!-- Header Action Row -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div class="svg-item-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                 <div class="page-info">
                                     <h3>Page ${item.pageNum}</h3>
                                     <p>${item.fileName}</p>
@@ -124,8 +124,8 @@ export class SvgViewer extends LitElement {
         const html = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
-  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: flex-start; overflow: auto; }
-  svg { max-width: 100%; height: auto; display: block; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+  svg { width: auto; height: auto; max-width: 100%; max-height: 100%; display: block; }
 </style></head>
 <body>${svgContent}</body></html>`;
 

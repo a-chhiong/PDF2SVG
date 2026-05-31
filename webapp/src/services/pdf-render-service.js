@@ -26,11 +26,16 @@ const CJK_RE = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff
  * @returns {Promise<SVGElement>} Rendered SVG DOM node
  */
 export async function renderPageToSvg(page, renderMode = 'vector', onProgress) {
-    // Fetch drawing operations and text layout in parallel
-    const [opList, textContent] = await Promise.all([
-        page.getOperatorList(),
-        page.getTextContent({ includeMarkedContent: true })
-    ]);
+    let opList, textContent;
+    
+    if (renderMode === 'vector') {
+        opList = await page.getOperatorList();
+    } else {
+        [opList, textContent] = await Promise.all([
+            page.getOperatorList(),
+            page.getTextContent({ includeMarkedContent: true })
+        ]);
+    }
 
     const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
     const svgGfx = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
@@ -39,72 +44,15 @@ export async function renderPageToSvg(page, renderMode = 'vector', onProgress) {
     const viewport = page.getViewport({ scale: 1.5 });
     const svgElement = await svgGfx.getSVG(opList, viewport);
 
-    // Select text nodes from the SVG
-    const textNodes = svgElement.querySelectorAll('text');
-    const textItems = textContent.items.filter(item => item.str !== undefined);
-
     if (renderMode === 'vector') {
-        await _applyVectorOutlines(svgElement, textNodes, textItems, page, onProgress);
+        await vectoriser.vectorizeTextElements(svgElement, page.commonObjs, onProgress);
     } else {
+        const textNodes = svgElement.querySelectorAll('text');
+        const textItems = textContent.items.filter(item => item.str !== undefined);
         await _applyLiveText(svgElement, textNodes, textItems, page, viewport.scale);
     }
 
     return svgElement;
-}
-
-/**
- * Vector Outline Mode: Replace <text> nodes with bezier <path> outlines.
- * Uses GlyphVectoriser with multi-tier font resolution (embedded → CDN shard).
- */
-async function _applyVectorOutlines(svgElement, textNodes, textItems, page, onProgress) {
-    let textItemIdx = 0;
-
-    for (let i = 0; i < textNodes.length; i++) {
-        const textNode = textNodes[i];
-
-        // Match this SVG <text> node to the corresponding textContent item.
-        // Skip marked-content separator items (they have empty str).
-        while (textItemIdx < textItems.length && textItems[textItemIdx].str === '') {
-            textItemIdx++;
-        }
-        if (textItemIdx >= textItems.length) {
-            textNode.remove();
-            continue;
-        }
-
-        const textItem = textItems[textItemIdx];
-        textItemIdx++;
-
-        const unicodeStr = textItem.str;
-
-        // Remove purely structural empty text runs
-        if (!unicodeStr || !unicodeStr.trim()) {
-            textNode.remove();
-            continue;
-        }
-
-        // Generate bezier path outlines using multi-tier font resolution
-        const pathData = await vectoriser.vectorizeTextNode(
-            textNode, unicodeStr, page.commonObjs, onProgress
-        );
-
-        if (pathData && pathData.trim()) {
-            const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            pathEl.setAttribute('d', pathData);
-
-            // Transfer style attributes (fill, stroke, transform, etc.)
-            for (const attr of textNode.attributes) {
-                if (!['x', 'y', 'dx', 'dy', 'font-family', 'font-size', 'font-weight', 'data-font-name'].includes(attr.name)) {
-                    pathEl.setAttribute(attr.name, attr.value);
-                }
-            }
-
-            textNode.replaceWith(pathEl);
-        } else {
-            // If vectorization produced nothing (e.g., whitespace-only), remove the text node
-            textNode.remove();
-        }
-    }
 }
 
 /**
