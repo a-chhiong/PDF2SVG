@@ -9,7 +9,7 @@ export class PdfConversionController {
         // Core reactive states
         this.status = 'idle'; // 'idle', 'converting', 'done'
         this.progressText = 'Preparing document...';
-        this.renderMode = 'vector'; // 'vector' or 'live'
+        this.renderMode = 'live'; // 'vector' or 'live'
         this.fileName = '';
         this.pdfArrayBuffer = null;
 
@@ -19,7 +19,7 @@ export class PdfConversionController {
     }
 
     get activePages() {
-        return this.renderMode === 'vector' ? this._vectorPages : this._livePages;
+        return this.renderMode === 'live' ? this._livePages : this._vectorPages;
     }
 
     reset() {

@@ -17,14 +17,6 @@ export class AppRoot extends LitElement {
         return html`
             <div class="app-header-controls">
                 <div class="segmented-control">
-                    <button class="seg-btn ${ctrl.renderMode === 'vector' ? 'active' : ''}" @click=${() => ctrl.setRenderMode('vector')}>
-                        <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                            <polyline points="2 12 17 22 12"/>
-                        </svg>
-                        <span>Vector Outlines</span>
-                    </button>
                     <button class="seg-btn ${ctrl.renderMode === 'live' ? 'active' : ''}" @click=${() => ctrl.setRenderMode('live')}>
                         <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -34,6 +26,14 @@ export class AppRoot extends LitElement {
                             <polyline points="10 9 9 9 8 9"/>
                         </svg>
                         <span>Editable Text</span>
+                    </button>
+                    <button class="seg-btn ${ctrl.renderMode === 'vector' ? 'active' : ''}" @click=${() => ctrl.setRenderMode('vector')}>
+                        <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 17 22 12"/>
+                        </svg>
+                        <span>Vector Outlines</span>
                     </button>
                 </div>
             </div>
