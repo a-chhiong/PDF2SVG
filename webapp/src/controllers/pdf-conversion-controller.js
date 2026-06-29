@@ -89,10 +89,18 @@ export class PdfConversionController {
                     const rawXml = new XMLSerializer().serializeToString(svgNode);
                     
                     // Clean namespace attributes for proper presentation vectors
-                    const cleanXml = rawXml
+                    let cleanXml = rawXml
                         .replace(/<svg:([a-zA-Z0-9_-]+)/g, '<$1')
                         .replace(/<\/svg:([a-zA-Z0-9_-]+)>/g, '</$1>')
                         .replace(/xmlns:svg="http:\/\/www.w3.org\/2000\/svg"/g, 'xmlns="http://www.w3.org/2000/svg"');
+
+                    // --- ADD THIS CODE BELOW TO SOLVE INDEPENDENT PAGE ID COLLISIONS ---
+                    const pagePrefix = `p-${pageNumDisplay}-`;
+                    cleanXml = cleanXml
+                        .replace(/id="([a-zA-Z0-9_-]+)"/g, `id="${pagePrefix}$1"`)
+                        .replace(/href="#([a-zA-Z0-9_-]+)"/g, `href="#${pagePrefix}$1"`)
+                        .replace(/url\(#([a-zA-Z0-9_-]+)\)/g, `url(#${pagePrefix}$1)`);
+                    // ------------------------------------------------------------------
 
                     results.push({
                         pageNum: pageNumDisplay,
