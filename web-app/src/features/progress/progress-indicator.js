@@ -17,20 +17,20 @@ export class ProgressIndicator extends LitElement {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem 2rem;
+      padding: clamp(1.25rem, 3.5vw, 3rem) clamp(1rem, 2.5vw, 2rem);
       text-align: center;
-      gap: 1.5rem;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
     }
 
     .spinner-ring {
       position: relative;
-      width: 56px;
-      height: 56px;
+      width: clamp(36px, 5vw, 56px);
+      height: clamp(36px, 5vw, 56px);
     }
 
     .spinner-ring svg {
-      width: 56px;
-      height: 56px;
+      width: clamp(36px, 5vw, 56px);
+      height: clamp(36px, 5vw, 56px);
       animation: spin-rotate 2s linear infinite;
     }
 
@@ -60,14 +60,14 @@ export class ProgressIndicator extends LitElement {
     }
 
     .status-text {
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 1.2vw, 1rem);
       color: var(--text-primary);
       font-weight: 600;
       margin: 0;
     }
 
     .status-subtext {
-      font-size: 0.82rem;
+      font-size: clamp(0.7rem, 0.85vw, 0.82rem);
       color: var(--text-muted);
       font-weight: 400;
       margin: -0.75rem 0 0 0;
@@ -75,8 +75,8 @@ export class ProgressIndicator extends LitElement {
 
     .progress-bar-track {
       width: 100%;
-      max-width: 360px;
-      height: 6px;
+      max-width: min(70vw, 360px);
+      height: clamp(4px, 0.5vw, 6px);
       background: var(--bg-surface-raised);
       border-radius: 3px;
       overflow: hidden;

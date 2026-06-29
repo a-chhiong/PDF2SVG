@@ -14,8 +14,8 @@ export class ThemeToggle extends LitElement {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: clamp(32px, 2.8vw, 40px);
+      height: clamp(32px, 2.8vw, 40px);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
       background: var(--bg-surface);

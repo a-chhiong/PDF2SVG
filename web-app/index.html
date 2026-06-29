@@ -9,33 +9,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="PDF2SVG">
+    <link rel="stylesheet" href="src/styles/main.css">
     <link rel="apple-touch-icon" href="public/assets/images/icon-192.png">
     <title>PDF2SVG — PDF to SVG Converter</title>
-    <link rel="stylesheet" href="src/styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-shell">
-        <!-- Top Bar — native title bar -->
-        <header class="top-bar">
-            <div class="top-bar-left">
-                <h1 class="logo">PDF<span>2</span>SVG</h1>
-                <span class="top-bar-subtitle">Convert PDF pages to vector SVG outlines</span>
-            </div>
-            <div class="top-bar-right">
-                <theme-toggle></theme-toggle>
-            </div>
-        </header>
-
-        <!-- Main Content — scrollable area -->
-        <main class="main-content">
-            <div class="card">
-                <app-root></app-root>
-            </div>
-        </main>
-    </div>
+    <app-root></app-root>
     <script type="module" src="src/main.js"></script>
 </body>
 </html>

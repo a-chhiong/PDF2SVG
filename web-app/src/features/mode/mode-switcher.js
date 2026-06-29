@@ -16,22 +16,22 @@ export class ModeSwitcher extends LitElement {
       background: var(--bg-surface-raised);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 3px;
-      gap: 3px;
+      padding: clamp(2px, 0.25vw, 3px);
+      gap: clamp(2px, 0.25vw, 3px);
     }
 
     .seg-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: clamp(3px, 0.5vw, 6px);
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 0.5rem 1rem;
+      padding: clamp(0.3rem, 0.5vw, 0.5rem) clamp(0.5rem, 1vw, 1rem);
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
       cursor: pointer;
       transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
       white-space: nowrap;
@@ -41,8 +41,8 @@ export class ModeSwitcher extends LitElement {
     }
 
     .seg-btn svg {
-      width: 18px;
-      height: 18px;
+      width: clamp(15px, 1.3vw, 18px);
+      height: clamp(15px, 1.3vw, 18px);
       opacity: 0.7;
       transition: opacity 0.2s ease, transform 0.2s ease;
       stroke-linecap: round;

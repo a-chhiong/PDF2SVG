@@ -32,8 +32,8 @@ export class SvgItem extends LitElement {
     .svg-item-header {
       display: flex;
       align-items: center;
-      padding: 0.65rem 1rem;
-      gap: 0.5rem;
+      padding: clamp(0.45rem, 0.7vw, 0.65rem) clamp(0.65rem, 1vw, 1rem);
+      gap: clamp(0.3rem, 0.5vw, 0.5rem);
       cursor: pointer;
       user-select: none;
       transition: background 0.2s ease;
@@ -46,7 +46,7 @@ export class SvgItem extends LitElement {
     .page-info {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: clamp(0.4rem, 0.7vw, 0.75rem);
       min-width: 0;
       flex: 1;
     }
@@ -55,18 +55,18 @@ export class SvgItem extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 26px;
-      height: 26px;
+      width: clamp(20px, 1.8vw, 26px);
+      height: clamp(20px, 1.8vw, 26px);
       border-radius: var(--radius-xs);
       background: var(--color-primary-light);
       color: var(--color-primary);
       font-weight: 700;
-      font-size: 0.72rem;
+      font-size: clamp(0.62rem, 0.7vw, 0.72rem);
       flex-shrink: 0;
     }
 
     .page-info h3 {
-      font-size: 0.95rem;
+      font-size: clamp(0.8rem, 1vw, 0.95rem);
       font-weight: 600;
       color: var(--text-primary);
       margin: 0;
@@ -76,14 +76,14 @@ export class SvgItem extends LitElement {
     }
 
     .page-info p {
-      font-size: 0.75rem;
+      font-size: clamp(0.65rem, 0.75vw, 0.75rem);
       color: var(--text-muted);
       margin: 0;
       display: none;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 140px;
+      max-width: clamp(80px, 10vw, 140px);
     }
 
     @media (min-width: 480px) {
@@ -117,15 +117,15 @@ export class SvgItem extends LitElement {
     }
 
     .btn-sm {
-      padding: 0.4rem 0.7rem;
-      min-height: 30px;
-      gap: 5px;
-      font-size: 0.78rem;
+      padding: clamp(0.3rem, 0.5vw, 0.4rem) clamp(0.5rem, 0.8vw, 0.7rem);
+      min-height: clamp(26px, 2.2vw, 30px);
+      gap: clamp(3px, 0.4vw, 5px);
+      font-size: clamp(0.7rem, 0.8vw, 0.78rem);
     }
 
     .btn-sm svg {
-      width: 15px;
-      height: 15px;
+      width: clamp(13px, 1.1vw, 15px);
+      height: clamp(13px, 1.1vw, 15px);
     }
 
     /* Copy button — teal / cyan accent (distinct from mode-switcher purple) */
@@ -199,15 +199,15 @@ export class SvgItem extends LitElement {
 
     .actions {
       display: flex;
-      gap: 0.35rem;
+      gap: clamp(0.2rem, 0.35vw, 0.35rem);
       flex-shrink: 0;
       margin-left: auto;
       margin-right: 0.25rem;
     }
 
     .expand-icon {
-      width: 20px;
-      height: 20px;
+      width: clamp(16px, 1.4vw, 20px);
+      height: clamp(16px, 1.4vw, 20px);
       color: var(--text-muted);
       transition: transform 0.3s ease, color 0.2s ease;
       flex-shrink: 0;
@@ -242,7 +242,7 @@ export class SvgItem extends LitElement {
 
     .svg-preview-container {
       background: var(--bg-surface-raised);
-      padding: 1rem;
+      padding: clamp(0.5rem, 0.9vw, 1rem);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -264,7 +264,6 @@ export class SvgItem extends LitElement {
     }
 
     .native-svg-wrapper svg {
-      width: 100% !important;
       max-width: 100%;
       height: auto;
       background: var(--svg-preview-bg);

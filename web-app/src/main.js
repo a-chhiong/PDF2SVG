@@ -3,12 +3,13 @@
 // All components are Lit elements with reactive properties
 // ============================================================
 
+import './features/app-root.js';
 import './features/file/file-drop-zone.js';
 import './features/progress/progress-indicator.js';
 import './features/viewer/svg-viewer.js';
 import './features/viewer/svg-item.js';
 import './features/theme/theme-toggle.js';
-import './features/app-root.js';
+import './components/app-loader.js';
 
 // --- Restore saved theme on load (light is default) ---
 (function initTheme() {

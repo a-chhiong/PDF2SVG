@@ -7,6 +7,8 @@ export class AppController {
     this.host.addController(this);
 
     // Core reactive states
+    this.appReady = false; // true → <app-loader> begins CSS fade-out
+    this.contentRevealed = false; // true → loader removed, real content shown
     this.status = 'idle'; // 'idle', 'converting', 'done'
     this.progressText = 'Preparing document...';
     this.progress = 0;
@@ -19,6 +21,24 @@ export class AppController {
     this._vectorPages = [];
     /** @type {Array} */
     this._livePages = [];
+  }
+
+  /**
+   * Called by <app-root> after first render.
+   * Orchestrates the loader → content transition sequence.
+   */
+  async onFirstRender() {
+    // Yield so the initial paint flushes (shows themed <app-loader>)
+    await new Promise((r) => setTimeout(r, 50));
+
+    // Step 1 — signal <app-loader> to start CSS fade-out (0.35s)
+    this.appReady = true;
+    this.host.requestUpdate();
+
+    // Step 2 — wait for the transition to finish, then swap to real content
+    await new Promise((r) => setTimeout(r, 400));
+    this.contentRevealed = true;
+    this.host.requestUpdate();
   }
 
   /** @returns {Array} */

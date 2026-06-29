@@ -16,7 +16,7 @@ export class FileDropZone extends LitElement {
     .drop-zone {
       border: 2px dashed var(--border-color);
       border-radius: var(--radius-xl);
-      padding: 3.5rem 2rem;
+      padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 2.5vw, 2rem);
       text-align: center;
       cursor: pointer;
       transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
@@ -61,10 +61,10 @@ export class FileDropZone extends LitElement {
     }
 
     .upload-icon {
-      width: 56px;
-      height: 56px;
+      width: clamp(36px, 5vw, 56px);
+      height: clamp(36px, 5vw, 56px);
       color: var(--color-primary);
-      margin-bottom: 0.5rem;
+      margin-bottom: clamp(0.25rem, 0.5vw, 0.5rem);
       opacity: 0.9;
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
       filter: drop-shadow(0 2px 8px var(--color-primary-glow));
@@ -79,7 +79,7 @@ export class FileDropZone extends LitElement {
     }
 
     .drop-zone p {
-      font-size: 1.15rem;
+      font-size: clamp(0.9rem, 1.4vw, 1.15rem);
       font-weight: 600;
       color: var(--text-primary);
       margin: 0;
@@ -88,13 +88,13 @@ export class FileDropZone extends LitElement {
 
     .drop-hint {
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
       pointer-events: none;
     }
 
     .drop-formats {
       color: var(--text-muted);
-      font-size: 0.75rem;
+      font-size: clamp(0.65rem, 0.75vw, 0.75rem);
       margin-top: 0.25rem;
       pointer-events: none;
     }

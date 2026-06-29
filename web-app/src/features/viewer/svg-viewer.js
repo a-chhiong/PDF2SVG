@@ -17,7 +17,7 @@ export class SvgViewer extends LitElement {
     .output-container {
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
     }
 
     .svg-viewer-header {
@@ -29,7 +29,7 @@ export class SvgViewer extends LitElement {
     }
 
     .svg-viewer-header h2 {
-      font-size: 1.1rem;
+      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
       font-weight: 700;
       color: var(--text-primary);
       display: flex;
@@ -39,8 +39,8 @@ export class SvgViewer extends LitElement {
     }
 
     .svg-viewer-header h2 svg {
-      width: 20px;
-      height: 20px;
+      width: clamp(16px, 1.4vw, 20px);
+      height: clamp(16px, 1.4vw, 20px);
       color: var(--color-accent);
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -50,7 +50,7 @@ export class SvgViewer extends LitElement {
     .svg-list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: clamp(0.6rem, 1vw, 1rem);
     }
 
     /* ===== Button styles (inlined for Shadow DOM) ===== */
@@ -59,11 +59,11 @@ export class SvgViewer extends LitElement {
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 0.6rem 1.25rem;
+      padding: clamp(0.35rem, 0.6vw, 0.6rem) clamp(0.7rem, 1.2vw, 1.25rem);
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: clamp(0.72rem, 0.9vw, 0.85rem);
       cursor: pointer;
       transition: all 0.2s ease;
       border: none;
@@ -72,12 +72,12 @@ export class SvgViewer extends LitElement {
       user-select: none;
       -webkit-user-select: none;
       text-decoration: none;
-      min-height: 38px;
+      min-height: clamp(30px, 2.5vw, 38px);
     }
 
     .btn svg {
-      width: 18px;
-      height: 18px;
+      width: clamp(15px, 1.2vw, 18px);
+      height: clamp(15px, 1.2vw, 18px);
       flex-shrink: 0;
       stroke-linecap: round;
       stroke-linejoin: round;
