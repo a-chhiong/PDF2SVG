@@ -61,8 +61,8 @@ export class SvgViewer extends LitElement {
                                 </div>
                             </div>
                             
-                            <div class="svg-preview-container" style="width: 100%; background: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 24px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2); overflow: auto;">
-                                <div class="native-svg-wrapper" style="width: 100%; max-width: 800px; height: auto;">
+                            <div class="svg-preview-container" style="width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 4px 12px rgba(0,0,0,0.4); overflow: auto;">
+                                <div class="native-svg-wrapper" style="width: 100%; display: flex; justify-content: center; align-items: center;">
                                     ${unsafeSVG(item.originalSvgHtml)}
                                 </div>
                             </div>

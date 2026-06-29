@@ -46,7 +46,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     padding: 2rem;
     position: relative;
 }
@@ -89,6 +89,68 @@ main {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* --- App Root Layout & Component Controls --- */
+.app-header-controls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.segmented-control {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.seg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.seg-btn svg {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.seg-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.seg-btn:hover svg {
+    opacity: 1;
+}
+
+.seg-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25);
+}
+
+.seg-btn.active svg {
+    opacity: 1;
+}
+
+.app-content-body {
+    width: 100%;
+}
+
+/* --- Drop Zone Styling --- */
 .drop-zone {
     border: 2px dashed var(--glass-border);
     border-radius: 16px;
@@ -329,10 +391,6 @@ footer {
         align-items: stretch !important;
         gap: 0.75rem;
     }
-    .svg-viewer-header h2 {
-        text-align: center;
-        font-size: 1.1rem;
-    }
     .svg-viewer-header .btn {
         justify-content: center;
     }
@@ -347,3 +405,13 @@ footer {
     }
 }
 
+/* Restrict the generated SVG to its container bounds and add a clean shadow drop */
+.native-svg-wrapper svg {
+    width: 100% !important; /* FORCED: Overrides fixed PDF point dimensions so it stretches smoothly */
+    max-width: 100%;
+    height: auto;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 
+                0 8px 16px -8px rgba(0, 0, 0, 0.5);
+}
