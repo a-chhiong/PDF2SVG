@@ -1,0 +1,134 @@
+/* ============================================================
+   PDF2SVG — Design Token System
+   Light (default) & Dark modes via [data-theme] on <html>
+   Native-app inspired color palette
+   ============================================================ */
+
+:root,
+[data-theme="light"] {
+  /* Brand */
+  --color-primary: #6c5ce7;
+  --color-primary-hover: #5a4bd1;
+  --color-primary-light: rgba(108, 92, 231, 0.15);
+  --color-primary-glow: rgba(108, 92, 231, 0.2);
+
+  --color-accent: #0096c7;
+  --color-accent-light: rgba(0, 150, 199, 0.1);
+
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+
+  /* Backgrounds — native app feel */
+  --bg-app: #f2f3f7;
+  --bg-surface: #ffffff;
+  --bg-surface-raised: #f0f1f5;
+  --bg-surface-hover: #e8e9ee;
+  --bg-overlay: rgba(0, 0, 0, 0.04);
+  --bg-nav: rgba(255, 255, 255, 0.82);
+  --bg-nav-border: rgba(0, 0, 0, 0.06);
+
+  /* Text */
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8e8ea0;
+  --text-inverse: #ffffff;
+
+  /* Borders */
+  --border-color: #e2e4ea;
+  --border-color-strong: #c8cad2;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.09);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.11);
+  --shadow-top: 0 -4px 20px rgba(0, 0, 0, 0.06);
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* SVG preview */
+  --svg-preview-bg: #ffffff;
+  --svg-preview-border: #e2e4ea;
+  --svg-preview-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+
+  /* Safe area */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* Nav bar height */
+  --nav-height: 64px;
+  --topbar-height: 56px;
+}
+
+[data-theme="dark"] {
+  --color-primary: #8b7cf7;
+  --color-primary-hover: #7c6cf0;
+  --color-primary-light: rgba(139, 124, 247, 0.15);
+  --color-primary-glow: rgba(139, 124, 247, 0.25);
+
+  --color-accent: #00d4ff;
+  --color-accent-light: rgba(0, 212, 255, 0.12);
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #f87171;
+
+  --bg-app: #0e0f16;
+  --bg-surface: #181a25;
+  --bg-surface-raised: #1e2030;
+  --bg-surface-hover: #262840;
+  --bg-overlay: rgba(255, 255, 255, 0.04);
+  --bg-nav: rgba(14, 15, 22, 0.88);
+  --bg-nav-border: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #eeeff8;
+  --text-secondary: #b8bbd0;
+  --text-muted: #787ca0;
+  --text-inverse: #1a1a2e;
+
+  --border-color: #262840;
+  --border-color-strong: #3a3d58;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --shadow-top: 0 -4px 20px rgba(0, 0, 0, 0.3);
+
+  --glass-bg: rgba(14, 15, 22, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: 20px;
+
+  --svg-preview-bg: #ffffff;
+  --svg-preview-border: #363852;
+  --svg-preview-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ============================================================
+   REDUCED MOTION — Accessibility
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
