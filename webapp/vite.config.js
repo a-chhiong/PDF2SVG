@@ -3,6 +3,14 @@ import { fileURLToPath } from 'url';
 
 export default defineConfig({
   base: './',
+  optimizeDeps: {
+    // CRITICAL FIX: Tell Vite to leave mupdf out of dependency optimization pre-bundling.
+    // This allows the engine to fetch its companion .wasm asset from its true relative folder path.
+    exclude: ['mupdf'],
+    esbuildOptions: {
+      target: 'es2022'
+    }
+  },
   build: {
     target: 'es2022',
     outDir: 'dist', // Output to webapp/dist/

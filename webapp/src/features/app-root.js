@@ -4,12 +4,9 @@ import { PdfConversionController } from '../controllers/pdf-conversion-controlle
 export class AppRoot extends LitElement {
     constructor() {
         super();
-        
-        // Instantiate the Reactive Controller, outsourcing all heavy logic and state
         this.pdfController = new PdfConversionController(this);
     }
 
-    // Render inside the Light DOM to inherit all global theme styles from style.css perfectly
     createRenderRoot() {
         return this;
     }
@@ -18,45 +15,6 @@ export class AppRoot extends LitElement {
         const ctrl = this.pdfController;
 
         return html`
-            <style>
-                .app-header-controls {
-                    display: flex;
-                    justify-content: center;
-                    margin-bottom: 2rem;
-                }
-                .segmented-control {
-                    display: inline-flex;
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 12px;
-                    padding: 4px;
-                    backdrop-filter: blur(10px);
-                }
-                .seg-btn {
-                    padding: 0.6rem 1.2rem;
-                    background: transparent;
-                    color: var(--text-muted);
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 0.9rem;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                .seg-btn:hover {
-                    color: var(--text-main);
-                }
-                .seg-btn.active {
-                    background: var(--primary);
-                    color: white;
-                    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
-                }
-            </style>
-            
-            <!-- Pure View Toolbar: delegates click events directly to the controller -->
             <div class="app-header-controls">
                 <div class="segmented-control">
                     <button class="seg-btn ${ctrl.renderMode === 'vector' ? 'active' : ''}" @click=${() => ctrl.setRenderMode('vector')}>
@@ -80,7 +38,6 @@ export class AppRoot extends LitElement {
                 </div>
             </div>
 
-            <!-- Pure View Content Body: renders declaratively based on controller state -->
             <div class="app-content-body">
                 ${ctrl.status === 'idle' ? html`
                     <file-drop-zone @file-loaded=${this._onFileLoaded}></file-drop-zone>
@@ -98,9 +55,8 @@ export class AppRoot extends LitElement {
     }
 
     _onFileLoaded(e) {
-        // Forward loaded PDF file data straight to the controller
-        this.pdfController.loadPdf(e.detail.pdf, e.detail.fileName);
+        // Unpack the correct target array buffer detail properties
+        this.pdfController.loadPdf(e.detail.arrayBuffer, e.detail.fileName);
     }
 }
-
 customElements.define('app-root', AppRoot);

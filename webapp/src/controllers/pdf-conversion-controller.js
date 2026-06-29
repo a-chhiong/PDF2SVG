@@ -1,10 +1,9 @@
 import { renderPageToSvg } from '../services/pdf-render-service.js';
+import * as mupdf from 'mupdf';
 
 export class PdfConversionController {
     constructor(host) {
         this.host = host;
-        
-        // Register this controller with the host component's lifecycle
         this.host.addController(this);
 
         // Core reactive states
@@ -12,44 +11,29 @@ export class PdfConversionController {
         this.progressText = 'Preparing document...';
         this.renderMode = 'vector'; // 'vector' or 'live'
         this.fileName = '';
-        this.pdfDocument = null;
+        this.pdfArrayBuffer = null;
 
-        // Decoupled cached pages to enable sub-millisecond mode switching
+        // Isolated multi-mode page caches
         this._vectorPages = [];
         this._livePages = [];
     }
 
-    // Lit Controller lifecycle hooks (optional for this context)
-    hostConnected() {}
-    hostDisconnected() {}
-
-    /**
-     * Get the generated pages for the active render mode.
-     */
     get activePages() {
         return this.renderMode === 'vector' ? this._vectorPages : this._livePages;
     }
 
-    /**
-     * Resets the controller state to allow uploading another document.
-     */
     reset() {
         this.status = 'idle';
         this.progressText = 'Preparing document...';
         this.fileName = '';
-        this.pdfDocument = null;
+        this.pdfArrayBuffer = null;
         this._vectorPages = [];
         this._livePages = [];
         this.host.requestUpdate();
     }
 
-    /**
-     * Loads a new PDF document, resets caches, and runs the converter.
-     * @param {object} pdf - Loaded PDF.js document object
-     * @param {string} fileName - Original filename
-     */
-    async loadPdf(pdf, fileName) {
-        this.pdfDocument = pdf;
+    async loadPdf(arrayBuffer, fileName) {
+        this.pdfArrayBuffer = arrayBuffer;
         this.fileName = fileName;
         this._vectorPages = [];
         this._livePages = [];
@@ -57,79 +41,61 @@ export class PdfConversionController {
         await this.triggerConversion();
     }
 
-    /**
-     * Toggles the render mode between vector outlines and live text.
-     * Triggers the converter immediately if a PDF is loaded.
-     * @param {string} mode - 'vector' or 'live'
-     */
     async setRenderMode(mode) {
         if (this.renderMode === mode) return;
         this.renderMode = mode;
-        this.host.requestUpdate(); // Request host visual refresh for toggled button state
+        this.host.requestUpdate();
 
-        if (this.pdfDocument) {
+        if (this.pdfArrayBuffer) {
             await this.triggerConversion();
         }
     }
 
-    /**
-     * Coordinates the page conversion loop. Updates progressive status 
-     * and caches rendered SVG page nodes in memory.
-     */
     async triggerConversion() {
-        if (!this.pdfDocument) return;
+        if (!this.pdfArrayBuffer) return;
 
-        // Instantly transition if pages for the active mode are already cached
+        // Skip execution if target mode lists are already cached
         const cachedList = this.renderMode === 'vector' ? this._vectorPages : this._livePages;
-        if (cachedList.length === this.pdfDocument.numPages) {
+        if (cachedList.length > 0) {
             this.status = 'done';
             this.host.requestUpdate();
             return;
         }
 
         this.status = 'converting';
-        const numPages = this.pdfDocument.numPages;
-        this.progressText = `Starting conversion of ${numPages} page(s)...`;
+        this.progressText = `Initializing MuPDF WASM core structures...`;
         this.host.requestUpdate();
 
+        let doc = null;
         try {
+            // Instantiate MuPDF document over the raw ArrayBuffer stream
+            doc = mupdf.Document.openDocument(this.pdfArrayBuffer, "application/pdf");
+            const numPages = doc.countPages();
             const results = [];
 
-            for (let i = 1; i <= numPages; i++) {
-                this.progressText = `Processing page ${i} of ${numPages}...`;
+            for (let i = 0; i < numPages; i++) {
+                const pageNumDisplay = i + 1;
+                this.progressText = `Processing page ${pageNumDisplay} of ${numPages}...`;
                 this.host.requestUpdate();
 
-                const page = await this.pdfDocument.getPage(i);
-                
-                let svgNode;
-                try {
-                    // Call shapes/outlines converter service, passing a progress callback to show real-time font loading countdowns
-                    svgNode = await renderPageToSvg(page, this.renderMode, (subStatus) => {
-                        this.progressText = `Processing page ${i} of ${numPages}: ${subStatus}`;
-                        this.host.requestUpdate();
-                    });
-                } catch (err) {
-                    console.warn(`Vector shaper failed on page ${i}, fallback to canvas.`, err);
-                    this.progressText = `Vector failed on page ${i}, applying canvas fallback...`;
-                    this.host.requestUpdate();
-                    
-                    svgNode = await this.renderPageToCanvasSvg(page);
-                }
+                // Generate vector or text nodes using our updated render service
+                const svgNode = renderPageToSvg(doc, i, this.renderMode);
 
                 if (svgNode) {
                     const cleanName = this.fileName.replace(/\.[^/.]+$/, "");
-                    const svgFileName = `${cleanName}_page_${i}.svg`;
+                    const svgFileName = `${cleanName}_page_${pageNumDisplay}.svg`;
                     
-                    // Clone the element for cache node isolation in DOM mounts
                     const clonedSvg = svgNode.cloneNode(true);
                     const rawXml = new XMLSerializer().serializeToString(svgNode);
+                    
+                    // Clean namespace attributes for proper presentation vectors
                     const cleanXml = rawXml
                         .replace(/<svg:([a-zA-Z0-9_-]+)/g, '<$1')
                         .replace(/<\/svg:([a-zA-Z0-9_-]+)>/g, '</$1>')
                         .replace(/xmlns:svg="http:\/\/www.w3.org\/2000\/svg"/g, 'xmlns="http://www.w3.org/2000/svg"');
 
                     results.push({
-                        pageNum: i,
+                        pageNum: pageNumDisplay,
                         fileName: svgFileName,
                         svgElement: clonedSvg,
                         originalSvgHtml: cleanXml
@@ -137,7 +103,7 @@ export class PdfConversionController {
                 }
             }
 
-            // Cache output elements for instant mode transitions
+            // Route pages into their respective caches
             if (this.renderMode === 'vector') {
                 this._vectorPages = results;
             } else {
@@ -147,49 +113,15 @@ export class PdfConversionController {
             this.status = 'done';
             this.host.requestUpdate();
         } catch (error) {
-            console.error('Error during conversion process:', error);
-            alert('An error occurred during conversion. Check console log for details.');
-            
+            console.error('Error during MuPDF conversion process:', error);
+            alert('An error occurred during vector conversion. Inspect the console log for details.');
             this.status = 'idle';
             this.host.requestUpdate();
+        } finally {
+            // Clean up allocated memory space inside the WASM instance
+            if (doc) {
+                doc.destroy();
+            }
         }
-    }
-
-    /**
-     * Decoupled canvas fallback shaper to ensure rendering safety.
-     */
-    async renderPageToCanvasSvg(page) {
-        const viewport = page.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        const renderContext = {
-            canvasContext: context,
-            viewport: viewport
-        };
-        await page.render(renderContext).promise;
-
-        const dataUrl = canvas.toDataURL('image/png');
-        const imageId = `fallback-image-${Math.random().toString(36).substring(2, 9)}`;
-
-        const svgString = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" 
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     version="1.1" 
-     width="${viewport.width}" 
-     height="${viewport.height}"
-     viewBox="0 0 ${viewport.width} ${viewport.height}">
-  <defs>
-    <image id="${imageId}" width="${viewport.width}" height="${viewport.height}" xlink:href="${dataUrl}"/>
-  </defs>
-  <rect width="${viewport.width}" height="${viewport.height}" fill="white"/>
-  <use href="#${imageId}"/>
-</svg>`;
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(svgString, 'image/svg+xml');
-        return doc.documentElement;
     }
 }

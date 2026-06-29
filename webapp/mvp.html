@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>PDF2SVG - MuPDF.js Functional MVP Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a; color: #e2e8f0;
+            padding: 24px; max-width: 1200px; margin: 0 auto;
+        }
+        h1 { color: #38bdf8; margin-bottom: 8px; }
+        .subtitle { color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+
+        .upload-container {
+            border: 2px dashed #334155;
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 40px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .upload-container.dragover {
+            border-color: #38bdf8;
+            background: #0f172a;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+        .upload-container p {
+            color: #94a3b8;
+            margin-bottom: 16px;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .file-input-btn {
+            background: #2563eb; color: #fff; border: none;
+            padding: 10px 24px; border-radius: 6px; font-weight: 600;
+            cursor: pointer; font-size: 14px; transition: background 0.2s;
+            pointer-events: none;
+        }
+        .upload-container:hover .file-input-btn {
+            background: #1d4ed8;
+        }
+        #hidden-file-input { display: none; }
+
+        .log-box {
+            background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+            padding: 16px; margin-bottom: 24px; font-family: 'Cascadia Code', monospace;
+            font-size: 13px; line-height: 1.6; min-height: 120px; max-height: 250px;
+            overflow-y: auto;
+        }
+        .log-box p { margin: 2px 0; }
+
+        .preview-box {
+            background: #ffffff; border: 1px solid #334155; border-radius: 8px;
+            padding: 16px; min-height: 300px; overflow: auto;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+        .preview-box svg { max-width: 100%; height: auto; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+
+        .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+        .stat-card {
+            background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+            padding: 12px 20px; flex: 1; min-width: 160px;
+        }
+        .stat-label { color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { color: #38bdf8; font-size: 22px; font-weight: 700; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 MuPDF.js — Local Pre-bundled Verification</h1>
+    <p class="subtitle">
+        Drop any local PDF file inside the dashed boundaries to run local WebAssembly text-as-path vector conversion.
+    </p>
+
+    <div class="upload-container" id="drop-zone">
+        <p>Drag and drop any PDF document directly here, or click to browse files</p>
+        <button class="file-input-btn">Select PDF File</button>
+        <input type="file" id="hidden-file-input" accept=".pdf,application/pdf" />
+    </div>
+
+    <div class="stats" id="stats-row" style="display:none;">
+        <div class="stat-card">
+            <div class="stat-label">File Name</div>
+            <div class="stat-value" id="stat-name" style="font-size: 14px; word-break: break-all; color: #e2e8f0;">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Pages</div>
+            <div class="stat-value" id="stat-pages">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">SVG &lt;text&gt; Elements</div>
+            <div class="stat-value" id="stat-text">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">SVG &lt;path&gt; Elements</div>
+            <div class="stat-value" id="stat-paths">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Execution Time</div>
+            <div class="stat-value" id="stat-time">-</div>
+        </div>
+    </div>
+
+    <div class="log-box" id="log">
+        <p style="color: #64748b;">Ready. Drag-and-drop or select a file to evaluate.</p>
+    </div>
+
+    <h2 style="color: #38bdf8; margin-bottom: 12px;">Vector SVG Output Preview</h2>
+    <div class="preview-box" id="svg-preview">
+        <span style="color: #64748b;">No document rendered yet</span>
+    </div>
+
+    <script type="module">
+        // FIXED: Using local node_modules entry point managed seamlessly by Vite's development engine
+        import * as mupdf from "/node_modules/mupdf/dist/mupdf.js";
+
+        const logEl = document.getElementById('log');
+        const previewEl = document.getElementById('svg-preview');
+        const statsRow = document.getElementById('stats-row');
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('hidden-file-input');
+
+        function log(msg, color) {
+            const p = document.createElement('p');
+            if (color) p.style.color = color;
+            p.textContent = msg;
+            logEl.appendChild(p);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        window.addEventListener('dragover', (e) => e.preventDefault(), false);
+        window.addEventListener('drop', (e) => e.preventDefault(), false);
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { 
+                e.preventDefault(); 
+                dropZone.classList.add('dragover'); 
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { 
+                e.preventDefault(); 
+                dropZone.classList.remove('dragover'); 
+            }, false);
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length === 0) return;
+
+            const file = files[0];
+            const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf');
+
+            if (isPdf) {
+                processFile(file);
+            } else {
+                log(`⚠️ Rejected file "${file.name}": Not recognized as a valid PDF.`, '#f59e0b');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) { 
+                processFile(e.target.files[0]); 
+            }
+        });
+
+        async function processFile(file) {
+            logEl.innerHTML = '';
+            previewEl.innerHTML = '<span style="color: #64748b;">Rendering local vector structures...</span>';
+            statsRow.style.display = 'none';
+
+            log(`🔄 Processing file asset: ${file.name}`);
+            
+            try {
+                const startTime = performance.now();
+                const arrayBuffer = await file.arrayBuffer();
+                log(`✓ File data compiled: ${(arrayBuffer.byteLength / 1024).toFixed(1)} KB`, '#22c55e');
+
+                log('🔄 Instantiating document context in MuPDF WASM runtime...');
+                const doc = mupdf.Document.openDocument(arrayBuffer, "application/pdf");
+                const pageCount = doc.countPages();
+                log(`✓ Document loaded successfully: ${pageCount} page(s)`, '#22c55e');
+
+                log('🔄 Extracting Page 1 content streams into text-as-path vector modes...');
+                const page = doc.loadPage(0);
+                const bounds = page.getBounds();
+                log(`  • Bounding View box parameters: [${bounds.map(b => b.toFixed(1)).join(', ')}]`);
+
+                const buf = new mupdf.Buffer();
+                const writer = new mupdf.DocumentWriter(buf, "svg", "text=path");
+                const dev = writer.beginPage([bounds[0], bounds[1], bounds[2], bounds[3]]);
+                
+                page.runPageContents(dev, mupdf.Matrix.identity);
+                page.runPageAnnots(dev, mupdf.Matrix.identity);
+                
+                writer.endPage();
+                writer.close();
+
+                const svgString = buf.asString();
+                const elapsed = performance.now() - startTime;
+
+                log(`✓ SVG code generated: ${(svgString.length / 1024).toFixed(1)} KB in ${elapsed.toFixed(0)}ms`, '#22c55e');
+
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+
+                const textElements = svgElement.querySelectorAll('text');
+                const pathElements = svgElement.querySelectorAll('path');
+
+                log(`📊 SVG Document Analysis:`, '#38bdf8');
+                log(`  • Generated <text> items: ${textElements.length} (Expected: 0)`);
+                log(`  • Generated <path> items: ${pathElements.length} (Vector glyph outlines)`);
+
+                if (textElements.length === 0 && pathElements.length > 0) {
+                    log(`🎉 SUCCESS: All characters converted to vector paths! No text artifacts remain.`, '#22c55e');
+                } else if (textElements.length > 0) {
+                    log(`⚠️ WARNING: ${textElements.length} text blocks remain unresolved.`, '#f59e0b');
+                }
+
+                statsRow.style.display = 'flex';
+                document.getElementById('stat-name').textContent = file.name;
+                document.getElementById('stat-pages').textContent = pageCount;
+                document.getElementById('stat-text').textContent = textElements.length;
+                document.getElementById('stat-paths').textContent = pathElements.length;
+                document.getElementById('stat-time').textContent = `${elapsed.toFixed(0)}ms`;
+
+                previewEl.innerHTML = '';
+                previewEl.appendChild(svgElement);
+                log(`\n✅ Viewport rendering complete.`, '#22c55e');
+
+                page.destroy();
+                doc.destroy();
+
+            } catch (error) {
+                log(`✗ Conversion error triggered: ${error.message}`, '#ef4444');
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

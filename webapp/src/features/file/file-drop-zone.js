@@ -1,9 +1,8 @@
 import { LitElement, html } from 'lit';
 
 export class FileDropZone extends LitElement {
-    // Render inside the Light DOM to inherit all global theme styles from style.css perfectly
     createRenderRoot() {
-        return this;
+        return this; // Light DOM delivery to inherit system wide styles
     }
 
     render() {
@@ -21,7 +20,7 @@ export class FileDropZone extends LitElement {
                     </svg>
                     <p>Drag & Drop your PDF</p>
                     <span>or click to browse files</span>
-                    <input type="file" id="file-input" accept="application/pdf" @change=${this._onChange} hidden>
+                    <input type="file" id="file-input" accept=".pdf,application/pdf" @change=${this._onChange} hidden>
                 </div>
             </div>
         `;
@@ -61,30 +60,24 @@ export class FileDropZone extends LitElement {
     }
 
     async handleFile(file) {
-        if (file.type !== 'application/pdf') {
+        const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdf) {
             alert('Please select a valid PDF file.');
             return;
         }
 
         try {
             const arrayBuffer = await file.arrayBuffer();
-            const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
-            const pdf = await pdfjsLib.getDocument({
-                data: arrayBuffer,
-                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
-                cMapPacked: true,
-                standardFontsUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/'
-            }).promise;
             
-            // Dispatch custom event to app-root containing the loaded PDF object & file name
+            // Dispatch event with the raw data stream up to the layout root components
             this.dispatchEvent(new CustomEvent('file-loaded', {
                 bubbles: true,
                 composed: true,
-                detail: { pdf, fileName: file.name }
+                detail: { arrayBuffer, fileName: file.name }
             }));
         } catch (error) {
-            console.error('Error loading PDF file:', error);
-            alert('Failed to load PDF file. Check browser console.');
+            console.error('Error reading file array buffer:', error);
+            alert('Failed to process file selection.');
         }
     }
 }
