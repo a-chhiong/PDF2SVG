@@ -334,11 +334,14 @@ public class SvgTextVectoriser : ISvgTextVectoriser
                         // Transfer non-layout attributes from the chunk's source element (e.g. fill,
                         // stroke, class, style) to the output path so colours and clip rules carry over.
                         // Layout and font attributes are excluded — they have been baked into the path.
+                        // We also exclude 'transform' and 'id' to prevent duplicate attributes and double-transformations
+                        // since they are already applied to the parent group element.
                         foreach (var attr in element.Attributes())
                         {
                             if (attr.Name.LocalName != "x" && attr.Name.LocalName != "y" && 
                                 attr.Name.LocalName != "dx" && attr.Name.LocalName != "dy" &&
-                                attr.Name.LocalName != "font-family" && attr.Name.LocalName != "font-size")
+                                attr.Name.LocalName != "font-family" && attr.Name.LocalName != "font-size" &&
+                                attr.Name.LocalName != "transform" && attr.Name.LocalName != "id")
                             {
                                 pathEl.SetAttributeValue(attr.Name, attr.Value);
                             }

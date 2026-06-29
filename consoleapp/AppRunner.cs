@@ -13,25 +13,52 @@ public static class AppRunner
         Console.WriteLine("==================================================");
         Console.ResetColor();
 
-        string? inputPath = null;
-        string? outputPath = null;
+        var converter = serviceProvider.GetRequiredService<PdfToSvgConverter>();
 
-        if (args.Length == 0)
+        if (args.Length > 0)
         {
-            Console.Write("Enter the path to your PDF file: ");
+            string inputPath = args[0];
+            string? outputPath = args.Length > 1 ? args[1] : null;
+
+            try
+            {
+                await converter.ConvertFileAsync(inputPath, outputPath);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\nConversion failed: {ex.Message}");
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+            }
+            return;
+        }
+
+        while (true)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Enter the path to your PDF file (or 'exit' to quit): ");
+            Console.ResetColor();
+
             string? selectedPath = Console.ReadLine()?.Trim();
 
-            if (!string.IsNullOrEmpty(selectedPath))
+            if (string.IsNullOrEmpty(selectedPath) || 
+                selectedPath.Equals("exit", StringComparison.OrdinalIgnoreCase) || 
+                selectedPath.Equals("q", StringComparison.OrdinalIgnoreCase))
             {
-                inputPath = selectedPath.Trim('\'', '"');
+                Console.WriteLine("Exiting. Goodbye!");
+                break;
             }
 
-            if (string.IsNullOrEmpty(inputPath) || !File.Exists(inputPath))
+            string inputPath = selectedPath.Trim('\'', '"');
+
+            if (!File.Exists(inputPath))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"\nError: File '{inputPath}' does not exist.");
                 Console.ResetColor();
-                return;
+                continue;
             }
 
             Console.WriteLine();
@@ -43,6 +70,7 @@ public static class AppRunner
             Console.Write("Enter choice (1, 2, or 3, default is 1): ");
             Console.ResetColor();
 
+            string? outputPath = null;
             string? outputChoice = Console.ReadLine()?.Trim();
             if (outputChoice == "2")
             {
@@ -57,32 +85,18 @@ public static class AppRunner
                     outputPath = customDir.Trim('\'', '"');
                 }
             }
-            else
-            {
-                outputPath = null;
-            }
-        }
-        else
-        {
-            inputPath = args[0];
-            if (args.Length > 1)
-            {
-                outputPath = args[1];
-            }
-        }
 
-        var converter = serviceProvider.GetRequiredService<PdfToSvgConverter>();
-
-        try
-        {
-            await converter.ConvertFileAsync(inputPath!, outputPath);
-        }
-        catch (Exception ex)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"\nConversion failed: {ex.Message}");
-            Console.WriteLine(ex.ToString());
-            Console.ResetColor();
+            try
+            {
+                await converter.ConvertFileAsync(inputPath, outputPath);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\nConversion failed: {ex.Message}");
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+            }
         }
     }
 }
