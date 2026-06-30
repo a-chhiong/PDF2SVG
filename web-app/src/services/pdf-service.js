@@ -30,5 +30,40 @@ export function renderPageToSvg(doc, pageIndex, renderMode = 'vector') {
 
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-    return svgDoc.documentElement;
+    const svgElement = svgDoc.documentElement;
+
+    if (renderMode === 'live') {
+        const textElements = svgElement.querySelectorAll('text, tspan');
+        textElements.forEach(el => {
+            // 1. Clean subset prefix from font-family and add generic fallback (e.g. MUFUZY+Consolas -> Consolas, monospace)
+            const fontFamily = el.getAttribute('font-family');
+            if (fontFamily) {
+                let cleanFont = fontFamily.replace(/^[A-Z]{6}\+/, '');
+                if (/consolas|mono|courier/i.test(cleanFont)) {
+                    cleanFont = `${cleanFont}, monospace`;
+                } else if (/gothic|sans|arial|helvetica/i.test(cleanFont)) {
+                    cleanFont = `${cleanFont}, sans-serif`;
+                } else if (/simsun|ming|serif|times/i.test(cleanFont)) {
+                    cleanFont = `${cleanFont}, serif`;
+                } else {
+                    cleanFont = `${cleanFont}, sans-serif`;
+                }
+                el.setAttribute('font-family', cleanFont);
+            }
+
+            // 2. Fix spacing scramble for Latin/numeric text elements by keeping only the first x-coordinate
+            const xAttr = el.getAttribute('x');
+            if (xAttr && xAttr.trim().includes(' ')) {
+                const textContent = el.textContent || '';
+                if (/[a-zA-Z0-9]/.test(textContent)) {
+                    const xCoords = xAttr.trim().split(/\s+/);
+                    if (xCoords.length > 0) {
+                        el.setAttribute('x', xCoords[0]);
+                    }
+                }
+            }
+        });
+    }
+
+    return svgElement;
 }

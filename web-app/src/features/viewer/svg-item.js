@@ -272,7 +272,6 @@ export class SvgItem extends LitElement {
     }
 
     .native-svg-wrapper text {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
       text-rendering: optimizeLegibility !important;
     }
 
