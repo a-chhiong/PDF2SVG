@@ -314,39 +314,44 @@ export class AppRoot extends LitElement {
         @dragleave=${this._onGlobalDragLeave}
         @drop=${this._onGlobalDrop}
       >
-        ${!ctrl.contentRevealed
-          ? html`
-            <div class="card">
-              <app-loader .ready=${ctrl.appReady}></app-loader>
-            </div>
-          `
+        ${ctrl.status === 'idle'
+          ? html`<file-drop-zone @file-loaded=${this._onFileLoaded}></file-drop-zone>`
           : html`
-            ${ctrl.status === 'idle'
-              ? html`<file-drop-zone @file-loaded=${this._onFileLoaded}></file-drop-zone>`
-              : html`
-                <div class="card">
-                  <div class="app-content-body">
-                    ${ctrl.status === 'converting'
-                      ? html`<progress-indicator .status=${ctrl.progressText} .progress=${ctrl.progress}></progress-indicator>`
-                      : ''}
+            <div class="card">
+              <div class="app-content-body">
+                ${ctrl.status === 'converting'
+                  ? html`<progress-indicator .status=${ctrl.progressText} .progress=${ctrl.progress}></progress-indicator>`
+                  : ''}
 
-                    ${ctrl.status === 'done'
-                      ? html`<svg-viewer .svgList=${ctrl.activePages} .fileName=${ctrl.fileName} @restart=${this._onRestart}></svg-viewer>`
-                      : ''}
-                  </div>
-                </div>
-              `}
+                ${ctrl.status === 'done'
+                  ? html`<svg-viewer .svgList=${ctrl.activePages} .fileName=${ctrl.fileName} @restart=${this._onRestart}></svg-viewer>`
+                  : ''}
+              </div>
+            </div>
           `}
       </main>
 
       ${this._isGlobalDragOver
         ? html`<global-drag-overlay></global-drag-overlay>`
         : ''}
+
+      ${!ctrl.contentRevealed
+        ? html`<app-loader .ready=${ctrl.appReady}></app-loader>`
+        : ''}
     `;
   }
 
-  _onFileLoaded(e) {
-    this.pdfController.loadPdf(e.detail.arrayBuffer, e.detail.fileName);
+  scrollToTop() {
+    const mainContent = this.shadowRoot?.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.scrollTop = 0;
+    }
+  }
+
+  async _onFileLoaded(e) {
+    await this.pdfController.loadPdf(e.detail.arrayBuffer, e.detail.fileName);
+    await this.updateComplete;
+    this.scrollToTop();
   }
 
   _onModeChange(e) {
@@ -355,6 +360,7 @@ export class AppRoot extends LitElement {
 
   _onRestart() {
     this.pdfController.reset();
+    this.scrollToTop();
   }
 
   _onGlobalDragEnter(e) {
@@ -404,7 +410,9 @@ export class AppRoot extends LitElement {
   async _loadDraggedFile(file) {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      this.pdfController.loadPdf(arrayBuffer, file.name);
+      await this.pdfController.loadPdf(arrayBuffer, file.name);
+      await this.updateComplete;
+      this.scrollToTop();
     } catch (error) {
       console.error('Error reading dropped file:', error);
       alert('Failed to process file selection.');

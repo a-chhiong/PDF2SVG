@@ -17,18 +17,26 @@ export class AppLoader extends LitElement {
     animations,
     css`
     :host {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-app);
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: clamp(0.5rem, 1vw, 1rem);
-      padding: clamp(1rem, 3.5vw, 3rem) clamp(0.75rem, 1.5vw, 1.5rem);
       opacity: 1;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+      visibility: visible;
     }
 
     :host([ready]) {
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }
 
