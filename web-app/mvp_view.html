@@ -72,8 +72,19 @@
 <body>
     <h1>🧪 MuPDF.js — Local Pre-bundled Verification</h1>
     <p class="subtitle">
-        Drop any local PDF file inside the dashed boundaries to run local WebAssembly text-as-path vector conversion.
+        Drop any local PDF file inside the dashed boundaries to run local WebAssembly text-as-path or live-text conversion.
     </p>
+
+    <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center;">
+        <div>
+            <label for="mode-select" style="font-weight: 600; color: #38bdf8; margin-right: 8px;">Mode:</label>
+            <select id="mode-select" style="background: #1e293b; color: #e2e8f0; border: 1px solid #334155; padding: 8px 16px; border-radius: 6px; font-size: 14px;">
+                <option value="live">Editable Text (live)</option>
+                <option value="vector">Vector Outlines (vector)</option>
+            </select>
+        </div>
+
+    </div>
 
     <div class="upload-container" id="drop-zone">
         <p>Drag and drop any PDF document directly here, or click to browse files</p>
@@ -116,12 +127,18 @@
     <script type="module">
         // FIXED: Using local node_modules entry point managed seamlessly by Vite's development engine
         import * as mupdf from "/node_modules/mupdf/dist/mupdf.js";
+        import { renderPageToSvg } from "/src/services/pdf-service.js";
 
         const logEl = document.getElementById('log');
         const previewEl = document.getElementById('svg-preview');
         const statsRow = document.getElementById('stats-row');
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('hidden-file-input');
+        const modeSelect = document.getElementById('mode-select');
+
+        // Reference to currently loaded pdf array buffer and name if loaded
+        let currentFileBuffer = null;
+        let currentFileName = "";
 
         function log(msg, color) {
             const p = document.createElement('p');
@@ -173,62 +190,58 @@
             }
         });
 
+        modeSelect.addEventListener('change', () => {
+            if (currentFileBuffer) {
+                renderPdfBuffer(currentFileBuffer, currentFileName);
+            }
+        });
+
+
         async function processFile(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                currentFileBuffer = arrayBuffer;
+                currentFileName = file.name;
+                await renderPdfBuffer(arrayBuffer, file.name);
+            } catch (error) {
+                log(`✗ Error reading file: ${error.message}`, '#ef4444');
+            }
+        }
+
+        async function renderPdfBuffer(arrayBuffer, fileName) {
             logEl.innerHTML = '';
             previewEl.innerHTML = '<span style="color: #64748b;">Rendering local vector structures...</span>';
             statsRow.style.display = 'none';
 
-            log(`🔄 Processing file asset: ${file.name}`);
+            const mode = modeSelect.value;
+            log(`🔄 Processing file asset: ${fileName} in mode "${mode}"`);
             
             try {
                 const startTime = performance.now();
-                const arrayBuffer = await file.arrayBuffer();
-                log(`✓ File data compiled: ${(arrayBuffer.byteLength / 1024).toFixed(1)} KB`, '#22c55e');
-
                 log('🔄 Instantiating document context in MuPDF WASM runtime...');
                 const doc = mupdf.Document.openDocument(arrayBuffer, "application/pdf");
                 const pageCount = doc.countPages();
                 log(`✓ Document loaded successfully: ${pageCount} page(s)`, '#22c55e');
 
-                log('🔄 Extracting Page 1 content streams into text-as-path vector modes...');
-                const page = doc.loadPage(0);
-                const bounds = page.getBounds();
-                log(`  • Bounding View box parameters: [${bounds.map(b => b.toFixed(1)).join(', ')}]`);
-
-                const buf = new mupdf.Buffer();
-                const writer = new mupdf.DocumentWriter(buf, "svg", "text=path");
-                const dev = writer.beginPage([bounds[0], bounds[1], bounds[2], bounds[3]]);
-                
-                page.runPageContents(dev, mupdf.Matrix.identity);
-                page.runPageAnnots(dev, mupdf.Matrix.identity);
-                
-                writer.endPage();
-                writer.close();
-
-                const svgString = buf.asString();
+                log(`🔄 Extracting Page 1 content streams into "${mode}" modes using pdf-service.js...`);
+                const svgElement = renderPageToSvg(doc, 0, mode);
                 const elapsed = performance.now() - startTime;
 
+                const serializer = new XMLSerializer();
+                const svgString = serializer.serializeToString(svgElement);
                 log(`✓ SVG code generated: ${(svgString.length / 1024).toFixed(1)} KB in ${elapsed.toFixed(0)}ms`, '#22c55e');
-
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-                const svgElement = svgDoc.documentElement;
 
                 const textElements = svgElement.querySelectorAll('text');
                 const pathElements = svgElement.querySelectorAll('path');
+                const tspanElements = svgElement.querySelectorAll('tspan');
 
                 log(`📊 SVG Document Analysis:`, '#38bdf8');
-                log(`  • Generated <text> items: ${textElements.length} (Expected: 0)`);
+                log(`  • Generated <text> items: ${textElements.length}`);
+                log(`  • Generated <tspan> items: ${tspanElements.length} (Merged same-line segments)`);
                 log(`  • Generated <path> items: ${pathElements.length} (Vector glyph outlines)`);
 
-                if (textElements.length === 0 && pathElements.length > 0) {
-                    log(`🎉 SUCCESS: All characters converted to vector paths! No text artifacts remain.`, '#22c55e');
-                } else if (textElements.length > 0) {
-                    log(`⚠️ WARNING: ${textElements.length} text blocks remain unresolved.`, '#f59e0b');
-                }
-
                 statsRow.style.display = 'flex';
-                document.getElementById('stat-name').textContent = file.name;
+                document.getElementById('stat-name').textContent = fileName;
                 document.getElementById('stat-pages').textContent = pageCount;
                 document.getElementById('stat-text').textContent = textElements.length;
                 document.getElementById('stat-paths').textContent = pathElements.length;
@@ -238,7 +251,6 @@
                 previewEl.appendChild(svgElement);
                 log(`\n✅ Viewport rendering complete.`, '#22c55e');
 
-                page.destroy();
                 doc.destroy();
 
             } catch (error) {

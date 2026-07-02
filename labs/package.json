@@ -1,0 +1,10 @@
+{
+  "name": "pdf2svg-labs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "jsdom": "^24.1.0",
+    "mupdf": "^1.27.0"
+  }
+}

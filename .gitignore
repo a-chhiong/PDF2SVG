@@ -169,3 +169,4 @@ x86/
 .vscode
 .agents
 .orphanage
+.test
