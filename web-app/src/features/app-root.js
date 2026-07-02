@@ -128,9 +128,12 @@ export class AppRoot extends LitElement {
 
     /* Phone (< 640px): full-width card, tight spacing */
     @media (max-width: 639px) {
+      :host {
+        --topbar-height: 48px;
+      }
       .top-bar {
         padding: 0.4rem 0.75rem;
-        min-height: 48px;
+        min-height: var(--topbar-height);
       }
       .logo {
         font-size: 1.1rem;
@@ -160,12 +163,15 @@ export class AppRoot extends LitElement {
 
     /* Tablet & iPad Pro (≥640px) */
     @media (min-width: 640px) and (max-width: 1439px) {
+      :host {
+        --topbar-height: 52px;
+      }
       .top-bar-subtitle {
         display: inline;
       }
       .top-bar {
         padding: 0.5rem 1.25rem;
-        min-height: 52px;
+        min-height: var(--topbar-height);
       }
       .logo {
         font-size: clamp(1.1rem, 2vw, 1.3rem);
@@ -174,9 +180,12 @@ export class AppRoot extends LitElement {
 
     /* Tablet landscape — tighter top-bar */
     @media (min-width: 800px) and (max-width: 1439px) and (orientation: landscape) {
+      :host {
+        --topbar-height: 48px;
+      }
       .top-bar {
         padding: 0.4rem 1.25rem;
-        min-height: 48px;
+        min-height: var(--topbar-height);
       }
       .logo {
         font-size: 1.15rem;
@@ -185,13 +194,16 @@ export class AppRoot extends LitElement {
 
     /* Desktop (1440px – 1799px) */
     @media (min-width: 1440px) and (max-width: 1799px) {
+      :host {
+        --topbar-height: 42px;
+      }
       .top-bar-subtitle {
         display: inline;
       }
       .top-bar {
         padding: 0.3rem 1rem;
         padding-top: calc(0.3rem + var(--safe-area-top));
-        min-height: 42px;
+        min-height: var(--topbar-height);
       }
       .top-bar-left {
         gap: 0.5rem;
@@ -210,13 +222,16 @@ export class AppRoot extends LitElement {
 
     /* Large desktop (≥1800px) */
     @media (min-width: 1800px) {
+      :host {
+        --topbar-height: 38px;
+      }
       .top-bar-subtitle {
         display: inline;
       }
       .top-bar {
         padding: 0.25rem 0.75rem;
         padding-top: calc(0.25rem + var(--safe-area-top));
-        min-height: 38px;
+        min-height: var(--topbar-height);
       }
       .top-bar-left {
         gap: 0.45rem;
@@ -244,8 +259,11 @@ export class AppRoot extends LitElement {
 
     /* Landscape extra-compact */
     @media (orientation: landscape) and (max-height: 500px) {
+      :host {
+        --topbar-height: 38px;
+      }
       .top-bar {
-        min-height: 38px;
+        min-height: var(--topbar-height);
         padding: 0.2rem 0.6rem;
       }
       .logo {
@@ -319,11 +337,11 @@ export class AppRoot extends LitElement {
                 </div>
               `}
           `}
-
-        ${this._isGlobalDragOver
-          ? html`<global-drag-overlay></global-drag-overlay>`
-          : ''}
       </main>
+
+      ${this._isGlobalDragOver
+        ? html`<global-drag-overlay></global-drag-overlay>`
+        : ''}
     `;
   }
 

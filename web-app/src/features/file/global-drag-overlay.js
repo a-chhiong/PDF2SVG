@@ -3,8 +3,11 @@ import { LitElement, html, css } from 'lit';
 export class GlobalDragOverlay extends LitElement {
   static styles = css`
     :host {
-      position: absolute;
-      inset: 0;
+      position: fixed;
+      top: calc(var(--topbar-height) + var(--safe-area-top));
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: var(--glass-bg);
       backdrop-filter: blur(var(--glass-blur));
       -webkit-backdrop-filter: blur(var(--glass-blur));
