@@ -1,135 +1,86 @@
 import { LitElement, html, css } from 'lit';
+import { buttonBase } from '../../styles/shared-styles.js';
 import './svg-item.js';
 
 export class SvgViewer extends LitElement {
   static properties = {
     svgList: { type: Object },
+    fileName: { type: String },
     _copiedIndex: { type: Number, state: true },
     _expandedIndex: { type: Number, state: true },
   };
 
-  static styles = css`
-    :host {
-      display: block;
-      animation: fadeInUp 0.35s ease forwards;
-    }
+  static styles = [
+    buttonBase,
+    css`
+      :host {
+        display: block;
+        animation: fadeInUp 0.35s ease forwards;
+      }
 
-    .output-container {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    }
-
-    .svg-viewer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .svg-viewer-header h2 {
-      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
-      font-weight: 700;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0;
-    }
-
-    .svg-viewer-header h2 svg {
-      width: clamp(16px, 1.4vw, 20px);
-      height: clamp(16px, 1.4vw, 20px);
-      color: var(--color-accent);
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      filter: drop-shadow(0 0 4px var(--color-accent-light));
-    }
-
-    .svg-list {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.6rem, 1vw, 1rem);
-    }
-
-    /* ===== Button styles (inlined for Shadow DOM) ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: clamp(0.35rem, 0.6vw, 0.6rem) clamp(0.7rem, 1.2vw, 1.25rem);
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: clamp(0.72rem, 0.9vw, 0.85rem);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: none;
-      white-space: nowrap;
-      line-height: 1;
-      user-select: none;
-      -webkit-user-select: none;
-      text-decoration: none;
-      min-height: clamp(30px, 2.5vw, 38px);
-    }
-
-    .btn svg {
-      width: clamp(15px, 1.2vw, 18px);
-      height: clamp(15px, 1.2vw, 18px);
-      flex-shrink: 0;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    /* "Restart" button — coral/rose, distinct from everything else */
-    .btn-restart {
-      background: rgba(220, 38, 38, 0.06);
-      color: var(--color-error);
-      border: 1px solid rgba(220, 38, 38, 0.15);
-    }
-
-    .btn-restart:hover {
-      background: rgba(220, 38, 38, 0.12);
-      color: #b91c1c;
-      border-color: rgba(220, 38, 38, 0.3);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.15);
-    }
-
-    .btn-restart:active {
-      transform: translateY(0);
-      box-shadow: none;
-    }
-
-    :host-context([data-theme="dark"]) .btn-restart {
-      background: rgba(248, 113, 113, 0.08);
-      color: #f87171;
-      border-color: rgba(248, 113, 113, 0.15);
-    }
-
-    :host-context([data-theme="dark"]) .btn-restart:hover {
-      background: rgba(248, 113, 113, 0.15);
-      color: #fca5a5;
-      border-color: rgba(248, 113, 113, 0.3);
-    }
-
-    @media (max-width: 560px) {
-      .svg-viewer-header {
+      .output-container {
+        display: flex;
         flex-direction: column;
-        align-items: stretch;
+        gap: clamp(0.75rem, 1.5vw, 1.25rem);
       }
-      .svg-viewer-header .btn {
-        justify-content: center;
-        width: 100%;
+
+      .svg-viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
-    }
-  `;
+
+      .svg-viewer-header h2 {
+        font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+      }
+
+      .svg-viewer-header h2 svg {
+        width: clamp(16px, 1.4vw, 20px);
+        height: clamp(16px, 1.4vw, 20px);
+        color: var(--color-accent);
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0 4px var(--color-accent-light));
+      }
+
+      .svg-viewer-header h2 .page-count {
+        font-size: clamp(0.72rem, 1vw, 0.85rem);
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-left: 0.25rem;
+      }
+
+      .svg-list {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.6rem, 1vw, 1rem);
+      }
+
+      @media (max-width: 560px) {
+        .svg-viewer-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .svg-viewer-header .btn {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+    `
+  ];
 
   constructor() {
     super();
-    this.svgList = /** @type {any} */([]);
+    this.svgList = [];
+    this.fileName = '';
     this._copiedIndex = -1;
     this._expandedIndex = 0;
   }
@@ -144,16 +95,15 @@ export class SvgViewer extends LitElement {
               <polyline points="2 17 12 22 22 17"/>
               <polyline points="2 12 17 22 12"/>
             </svg>
-            Generated SVGs
+            <span>${this.fileName || 'Generated SVGs'}</span>
+            <span class="page-count">${this.svgList?.length ? `(${this.svgList.length} pages)` : ''}</span>
           </h2>
-          <button class="btn btn-restart" @click=${this._onRestart}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-              <path d="M16 3h5v5"/>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-              <path d="M8 21H3v-5"/>
+          <button class="btn btn-secondary" @click=${this._onRestart}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Restart
+            Convert Another
           </button>
         </div>
 

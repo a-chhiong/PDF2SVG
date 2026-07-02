@@ -4,8 +4,13 @@ import { animations } from '../styles/shared-styles.js';
 import './theme/theme-toggle.js';
 import './mode/mode-switcher.js';
 import '../components/app-loader.js';
+import './file/global-drag-overlay.js';
 
 export class AppRoot extends LitElement {
+  static properties = {
+    _isGlobalDragOver: { type: Boolean, state: true },
+  };
+
   static styles = [
     animations,
     css`
@@ -82,6 +87,7 @@ export class AppRoot extends LitElement {
 
     /* ── Main Content ───────────────────── */
     .main-content {
+      position: relative;
       flex: 1;
       display: flex;
       justify-content: center;
@@ -102,7 +108,12 @@ export class AppRoot extends LitElement {
       transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
       max-width: 90vw;
       width: 100%;
+      margin: auto;
     }
+
+
+
+    /* (global-drag-overlay styles are now encapsulated inside global-drag-overlay component) */
 
     .app-content-body {
       width: 100%;
@@ -252,6 +263,8 @@ export class AppRoot extends LitElement {
   constructor() {
     super();
     this.pdfController = new AppController(this);
+    this._isGlobalDragOver = false;
+    this._dragCounter = 0;
   }
 
   /** Delegate the loader → content transition to the controller */
@@ -277,26 +290,39 @@ export class AppRoot extends LitElement {
         </div>
       </header>
 
-      <main class="main-content">
-        <div class="card">
-          ${!ctrl.contentRevealed
-            ? html`<app-loader .ready=${ctrl.appReady}></app-loader>`
-            : html`
-              <div class="app-content-body">
-                ${ctrl.status === 'idle'
-                  ? html`<file-drop-zone @file-loaded=${this._onFileLoaded}></file-drop-zone>`
-                  : ''}
+      <main class="main-content"
+        @dragenter=${this._onGlobalDragEnter}
+        @dragover=${this._onGlobalDragOver}
+        @dragleave=${this._onGlobalDragLeave}
+        @drop=${this._onGlobalDrop}
+      >
+        ${!ctrl.contentRevealed
+          ? html`
+            <div class="card">
+              <app-loader .ready=${ctrl.appReady}></app-loader>
+            </div>
+          `
+          : html`
+            ${ctrl.status === 'idle'
+              ? html`<file-drop-zone @file-loaded=${this._onFileLoaded}></file-drop-zone>`
+              : html`
+                <div class="card">
+                  <div class="app-content-body">
+                    ${ctrl.status === 'converting'
+                      ? html`<progress-indicator .status=${ctrl.progressText} .progress=${ctrl.progress}></progress-indicator>`
+                      : ''}
 
-                ${ctrl.status === 'converting'
-                  ? html`<progress-indicator .status=${ctrl.progressText} .progress=${ctrl.progress}></progress-indicator>`
-                  : ''}
+                    ${ctrl.status === 'done'
+                      ? html`<svg-viewer .svgList=${ctrl.activePages} .fileName=${ctrl.fileName} @restart=${this._onRestart}></svg-viewer>`
+                      : ''}
+                  </div>
+                </div>
+              `}
+          `}
 
-                ${ctrl.status === 'done'
-                  ? html`<svg-viewer .svgList=${ctrl.activePages} @restart=${this._onRestart}></svg-viewer>`
-                  : ''}
-              </div>
-            `}
-        </div>
+        ${this._isGlobalDragOver
+          ? html`<global-drag-overlay></global-drag-overlay>`
+          : ''}
       </main>
     `;
   }
@@ -311,6 +337,60 @@ export class AppRoot extends LitElement {
 
   _onRestart() {
     this.pdfController.reset();
+  }
+
+  _onGlobalDragEnter(e) {
+    if (this.pdfController.status !== 'done') return;
+    if (e.dataTransfer.types.includes('Files')) {
+      e.preventDefault();
+      this._dragCounter++;
+      this._isGlobalDragOver = true;
+    }
+  }
+
+  _onGlobalDragOver(e) {
+    if (this.pdfController.status !== 'done') return;
+    if (e.dataTransfer.types.includes('Files')) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  _onGlobalDragLeave(e) {
+    if (this.pdfController.status !== 'done') return;
+    this._dragCounter--;
+    if (this._dragCounter <= 0) {
+      this._dragCounter = 0;
+      this._isGlobalDragOver = false;
+    }
+  }
+
+  _onGlobalDrop(e) {
+    if (this.pdfController.status !== 'done') return;
+    e.preventDefault();
+    this._dragCounter = 0;
+    this._isGlobalDragOver = false;
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (isPdf) {
+        this._loadDraggedFile(file);
+      } else {
+        alert('Please select a valid PDF file.');
+      }
+    }
+  }
+
+  async _loadDraggedFile(file) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      this.pdfController.loadPdf(arrayBuffer, file.name);
+    } catch (error) {
+      console.error('Error reading dropped file:', error);
+      alert('Failed to process file selection.');
+    }
   }
 }
 

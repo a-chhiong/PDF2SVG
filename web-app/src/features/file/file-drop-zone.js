@@ -1,132 +1,122 @@
 import { LitElement, html, css } from 'lit';
 import { ref, createRef } from 'lit/directives/ref.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { buttonBase } from '../../styles/shared-styles.js';
 
 export class FileDropZone extends LitElement {
   static properties = {
     _isDragOver: { type: Boolean, state: true },
   };
 
-  static styles = css`
-    :host {
-      display: block;
-      animation: fadeIn 0.35s ease forwards;
-    }
-
-    .drop-zone {
-      border: 2px dashed var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 2.5vw, 2rem);
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg-surface);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .drop-zone::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, var(--color-primary-light) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .drop-zone:hover::before,
-    .drop-zone.drag-over::before {
-      opacity: 1;
-    }
-
-    .drop-zone:hover,
-    .drop-zone.drag-over {
-      border-color: var(--color-primary);
-    }
-
-    .drop-zone.drag-over {
-      transform: scale(1.015);
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 4px var(--color-primary-light), var(--shadow-lg);
-    }
-
-    .drop-zone-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      position: relative;
-      pointer-events: none;
-    }
-
-    .upload-icon {
-      width: clamp(36px, 5vw, 56px);
-      height: clamp(36px, 5vw, 56px);
-      color: var(--color-primary);
-      margin-bottom: clamp(0.25rem, 0.5vw, 0.5rem);
-      opacity: 0.9;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-      filter: drop-shadow(0 2px 8px var(--color-primary-glow));
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .drop-zone:hover .upload-icon {
-      transform: translateY(-6px) scale(1.08);
-      opacity: 1;
-      filter: drop-shadow(0 4px 16px var(--color-primary-glow));
-    }
-
-    .drop-zone p {
-      font-size: clamp(0.9rem, 1.4vw, 1.15rem);
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0;
-      pointer-events: none;
-    }
-
-    .drop-hint {
-      color: var(--text-muted);
-      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
-      pointer-events: none;
-    }
-
-    .drop-formats {
-      color: var(--text-muted);
-      font-size: clamp(0.65rem, 0.75vw, 0.75rem);
-      margin-top: 0.25rem;
-      pointer-events: none;
-    }
-
-    @media (max-width: 640px) {
-      .drop-zone {
-        padding: 2.5rem 1.25rem;
-        border-radius: var(--radius-lg);
+  static styles = [
+    buttonBase,
+    css`
+      :host {
+        display: block;
+        animation: fadeIn 0.35s ease forwards;
+        flex: 1;
+        align-self: stretch;
       }
+
+      .placeholder-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 2.5vw, 2rem);
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-xl);
+        background-color: transparent;
+        transition: border-color 0.25s ease, background-color 0.25s ease;
+        height: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
       .upload-icon {
-        width: 44px;
-        height: 44px;
+        width: clamp(40px, 6vw, 64px);
+        height: clamp(40px, 6vw, 64px);
+        color: var(--color-primary);
+        margin-bottom: clamp(0.5rem, 1vw, 1.25rem);
+        opacity: 0.95;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        filter: drop-shadow(0 2px 8px var(--color-primary-glow));
       }
-      .drop-zone p {
-        font-size: 1rem;
-      }
-    }
 
-    @media (orientation: landscape) and (max-height: 500px) {
-      .drop-zone {
-        padding: 1.5rem 1rem;
+      @keyframes float {
+        0% { transform: translateY(-6px) scale(1.06); }
+        50% { transform: translateY(-12px) scale(1.06); }
+        100% { transform: translateY(-6px) scale(1.06); }
       }
-      .upload-icon {
-        width: 36px;
-        height: 36px;
-        margin-bottom: 0.25rem;
+
+      .placeholder-container:hover .upload-icon {
+        animation: float 2.5s ease-in-out infinite;
+        opacity: 1;
+        filter: drop-shadow(0 4px 16px var(--color-primary-glow));
       }
-      .drop-zone p {
-        font-size: 0.9rem;
+
+      .placeholder-container.drag-over {
+        border-color: var(--color-primary);
+        background-color: var(--color-primary-light);
       }
-    }
-  `;
+
+      .placeholder-container.drag-over .upload-icon {
+        transform: translateY(-8px) scale(1.08);
+        filter: drop-shadow(0 4px 16px var(--color-primary-glow));
+      }
+
+      .drop-title {
+        font-size: clamp(1rem, 1.5vw, 1.3rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        pointer-events: none;
+      }
+
+      .drop-divider {
+        color: var(--text-muted);
+        font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+        font-weight: 500;
+        margin: 0.25rem 0;
+        pointer-events: none;
+      }
+
+      .btn-choose {
+        pointer-events: none;
+        margin: 0.5rem 0;
+      }
+
+      .drop-formats {
+        color: var(--text-muted);
+        font-size: clamp(0.65rem, 0.75vw, 0.75rem);
+        margin-top: 0.25rem;
+        pointer-events: none;
+      }
+
+      @media (max-width: 640px) {
+        .placeholder-container {
+          padding: 2.5rem 1.25rem;
+        }
+        .upload-icon {
+          width: 44px;
+          height: 44px;
+        }
+      }
+
+      @media (orientation: landscape) and (max-height: 500px) {
+        .placeholder-container {
+          padding: 1.5rem 1rem;
+        }
+        .upload-icon {
+          width: 36px;
+          height: 36px;
+          margin-bottom: 0.25rem;
+        }
+      }
+    `
+  ];
 
   constructor() {
     super();
@@ -135,7 +125,7 @@ export class FileDropZone extends LitElement {
   }
 
   render() {
-    const classes = { 'drop-zone': true, 'drag-over': this._isDragOver };
+    const classes = { 'placeholder-container': true, 'drag-over': this._isDragOver };
     return html`
       <div
         class=${classMap(classes)}
@@ -144,17 +134,23 @@ export class FileDropZone extends LitElement {
         @dragleave=${this._onDragLeave}
         @drop=${this._onDrop}
       >
-        <div class="drop-zone-content">
-          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="18" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="9 15 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="drop-title">Drag & Drop your PDF</p>
+        <span class="drop-divider">— or —</span>
+        <div class="btn btn-primary btn-choose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
           </svg>
-          <p>Drag & Drop your PDF</p>
-          <span class="drop-hint">or click to browse files</span>
-          <span class="drop-formats">PDF files only</span>
-          <input ${ref(this._fileInputRef)} type="file" accept=".pdf,application/pdf" @change=${this._onChange} hidden>
+          Choose PDF File
         </div>
+        <span class="drop-formats">PDF files only</span>
+        <input ${ref(this._fileInputRef)} type="file" accept=".pdf,application/pdf" @change=${this._onChange} hidden>
       </div>
     `;
   }
