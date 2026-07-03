@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { ref, createRef } from 'lit/directives/ref.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { buttonBase } from '../../styles/shared-styles.js';
+import { buttonBase } from '../../components/shared-styles.js';
 
 export class FileDropZone extends LitElement {
   static properties = {
@@ -24,8 +24,8 @@ export class FileDropZone extends LitElement {
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 2.5vw, 2rem);
-        border: 2px dashed var(--border-color);
+        padding: var(--dropzone-padding);
+        border: 2px dashed var(--border-color-strong);
         border-radius: var(--radius-xl);
         background-color: transparent;
         transition: border-color 0.25s ease, background-color 0.25s ease;
@@ -36,10 +36,10 @@ export class FileDropZone extends LitElement {
       }
 
       .upload-icon {
-        width: clamp(40px, 6vw, 64px);
-        height: clamp(40px, 6vw, 64px);
+        width: var(--dropzone-icon-size);
+        height: var(--dropzone-icon-size);
         color: var(--color-primary);
-        margin-bottom: clamp(0.5rem, 1vw, 1.25rem);
+        margin-bottom: var(--dropzone-icon-mb);
         opacity: 0.95;
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
         filter: drop-shadow(0 2px 8px var(--color-primary-glow));
@@ -93,27 +93,6 @@ export class FileDropZone extends LitElement {
         font-size: clamp(0.65rem, 0.75vw, 0.75rem);
         margin-top: 0.25rem;
         pointer-events: none;
-      }
-
-      @media (max-width: 640px) {
-        .placeholder-container {
-          padding: 2.5rem 1.25rem;
-        }
-        .upload-icon {
-          width: 44px;
-          height: 44px;
-        }
-      }
-
-      @media (orientation: landscape) and (max-height: 500px) {
-        .placeholder-container {
-          padding: 1.5rem 1rem;
-        }
-        .upload-icon {
-          width: 36px;
-          height: 36px;
-          margin-bottom: 0.25rem;
-        }
       }
     `
   ];

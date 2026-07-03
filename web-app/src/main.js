@@ -10,6 +10,7 @@ import './features/viewer/svg-viewer.js';
 import './features/viewer/svg-item.js';
 import './features/theme/theme-toggle.js';
 import './components/app-loader.js';
+import './components/app-zoom.js';
 
 // --- Restore saved theme on load (light is default) ---
 (function initTheme() {

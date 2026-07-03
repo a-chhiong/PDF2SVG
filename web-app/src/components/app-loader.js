@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit';
-import { animations } from '../styles/shared-styles.js';
 
 /**
  * AppLoader — Initial loading indicator.
@@ -14,7 +13,6 @@ export class AppLoader extends LitElement {
   };
 
   static styles = [
-    animations,
     css`
     :host {
       position: fixed;

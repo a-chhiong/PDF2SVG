@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { AppController } from '../controllers/app-controller.js';
-import { animations } from '../styles/shared-styles.js';
 import './theme/theme-toggle.js';
 import './mode/mode-switcher.js';
 import '../components/app-loader.js';
@@ -11,9 +10,7 @@ export class AppRoot extends LitElement {
     _isGlobalDragOver: { type: Boolean, state: true },
   };
 
-  static styles = [
-    animations,
-    css`
+  static styles = css`
     :host {
       display: flex;
       flex-direction: column;
@@ -29,8 +26,8 @@ export class AppRoot extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.5rem 1rem;
-      padding-top: calc(0.5rem + var(--safe-area-top));
+      padding: var(--topbar-padding);
+      padding-top: var(--topbar-padding-top);
       min-height: var(--topbar-height);
       background: var(--bg-nav);
       backdrop-filter: blur(var(--glass-blur));
@@ -46,22 +43,22 @@ export class AppRoot extends LitElement {
     .top-bar-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: var(--topbar-left-gap);
       min-width: 0;
     }
 
     .top-bar-right {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--topbar-right-gap);
       flex-shrink: 0;
     }
 
     .logo {
       font-family: 'Outfit', sans-serif;
       font-weight: 800;
-      font-size: clamp(1rem, 1.6vw, 1.35rem);
-      letter-spacing: -0.5px;
+      font-size: var(--logo-font-size);
+      letter-spacing: var(--logo-letter-spacing);
       background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -78,10 +75,10 @@ export class AppRoot extends LitElement {
     }
 
     .top-bar-subtitle {
-      font-size: clamp(0.65rem, 0.85vw, 0.78rem);
+      font-size: var(--logo-subtitle-font-size);
       color: var(--text-muted);
       font-weight: 400;
-      display: none;
+      display: var(--topbar-subtitle-display);
       white-space: nowrap;
     }
 
@@ -102,18 +99,14 @@ export class AppRoot extends LitElement {
     .card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: clamp(0.85rem, 2vw, 1.75rem);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
       box-shadow: var(--shadow-md);
       transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-      max-width: 90vw;
+      max-width: var(--card-max-width);
       width: 100%;
       margin: auto;
     }
-
-
-
-    /* (global-drag-overlay styles are now encapsulated inside global-drag-overlay component) */
 
     .app-content-body {
       width: 100%;
@@ -123,160 +116,7 @@ export class AppRoot extends LitElement {
     .app-content-body > * {
       animation: fadeInUp 0.35s ease forwards;
     }
-
-    /* ── Responsive ─────────────────────── */
-
-    /* Phone (< 640px): full-width card, tight spacing */
-    @media (max-width: 639px) {
-      :host {
-        --topbar-height: 48px;
-      }
-      .top-bar {
-        padding: 0.4rem 0.75rem;
-        min-height: var(--topbar-height);
-      }
-      .logo {
-        font-size: 1.1rem;
-      }
-      .top-bar-right {
-        gap: 0.25rem;
-      }
-      .card {
-        max-width: 100%;
-        padding: 1.25rem;
-      }
-    }
-
-    /* Very small phone */
-    @media (max-width: 380px) {
-      .top-bar {
-        padding: 0.3rem 0.6rem;
-      }
-      .logo {
-        font-size: 1rem;
-      }
-      .card {
-        padding: 1rem;
-        border-radius: var(--radius-md);
-      }
-    }
-
-    /* Tablet & iPad Pro (≥640px) */
-    @media (min-width: 640px) and (max-width: 1439px) {
-      :host {
-        --topbar-height: 52px;
-      }
-      .top-bar-subtitle {
-        display: inline;
-      }
-      .top-bar {
-        padding: 0.5rem 1.25rem;
-        min-height: var(--topbar-height);
-      }
-      .logo {
-        font-size: clamp(1.1rem, 2vw, 1.3rem);
-      }
-    }
-
-    /* Tablet landscape — tighter top-bar */
-    @media (min-width: 800px) and (max-width: 1439px) and (orientation: landscape) {
-      :host {
-        --topbar-height: 48px;
-      }
-      .top-bar {
-        padding: 0.4rem 1.25rem;
-        min-height: var(--topbar-height);
-      }
-      .logo {
-        font-size: 1.15rem;
-      }
-    }
-
-    /* Desktop (1440px – 1799px) */
-    @media (min-width: 1440px) and (max-width: 1799px) {
-      :host {
-        --topbar-height: 42px;
-      }
-      .top-bar-subtitle {
-        display: inline;
-      }
-      .top-bar {
-        padding: 0.3rem 1rem;
-        padding-top: calc(0.3rem + var(--safe-area-top));
-        min-height: var(--topbar-height);
-      }
-      .top-bar-left {
-        gap: 0.5rem;
-      }
-      .top-bar-right {
-        gap: 0.35rem;
-      }
-      .logo {
-        font-size: 1rem;
-        letter-spacing: -0.3px;
-      }
-      .top-bar-subtitle {
-        font-size: 0.68rem;
-      }
-    }
-
-    /* Large desktop (≥1800px) */
-    @media (min-width: 1800px) {
-      :host {
-        --topbar-height: 38px;
-      }
-      .top-bar-subtitle {
-        display: inline;
-      }
-      .top-bar {
-        padding: 0.25rem 0.75rem;
-        padding-top: calc(0.25rem + var(--safe-area-top));
-        min-height: var(--topbar-height);
-      }
-      .top-bar-left {
-        gap: 0.45rem;
-      }
-      .top-bar-right {
-        gap: 0.3rem;
-      }
-      .logo {
-        font-size: 0.9rem;
-        letter-spacing: -0.2px;
-      }
-      .top-bar-subtitle {
-        font-size: 0.65rem;
-      }
-    }
-
-    /* Landscape constrained — card goes full-width, tighter */
-    @media (orientation: landscape) and (max-height: 600px) {
-      .card {
-        max-width: 100%;
-        border-radius: var(--radius-md);
-        padding: 0.85rem 1.25rem;
-      }
-    }
-
-    /* Landscape extra-compact */
-    @media (orientation: landscape) and (max-height: 500px) {
-      :host {
-        --topbar-height: 38px;
-      }
-      .top-bar {
-        min-height: var(--topbar-height);
-        padding: 0.2rem 0.6rem;
-      }
-      .logo {
-        font-size: 0.9rem;
-      }
-      .top-bar-subtitle {
-        display: none;
-      }
-      .card {
-        padding: 0.65rem 0.85rem;
-      }
-    }
-  `];
+  `;
 
   constructor() {
     super();

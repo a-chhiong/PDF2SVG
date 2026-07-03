@@ -17,20 +17,20 @@ export class ProgressIndicator extends LitElement {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: clamp(1.25rem, 3.5vw, 3rem) clamp(1rem, 2.5vw, 2rem);
+      padding: var(--progress-container-padding);
       text-align: center;
-      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+      gap: var(--progress-container-gap);
     }
 
     .spinner-ring {
       position: relative;
-      width: clamp(36px, 5vw, 56px);
-      height: clamp(36px, 5vw, 56px);
+      width: var(--progress-spinner-size);
+      height: var(--progress-spinner-size);
     }
 
     .spinner-ring svg {
-      width: clamp(36px, 5vw, 56px);
-      height: clamp(36px, 5vw, 56px);
+      width: var(--progress-spinner-size);
+      height: var(--progress-spinner-size);
       animation: spin-rotate 2s linear infinite;
     }
 
@@ -60,7 +60,7 @@ export class ProgressIndicator extends LitElement {
     }
 
     .status-text {
-      font-size: clamp(0.85rem, 1.2vw, 1rem);
+      font-size: var(--progress-status-font-size);
       color: var(--text-primary);
       font-weight: 600;
       margin: 0;
@@ -126,39 +126,6 @@ export class ProgressIndicator extends LitElement {
       100% {
         stroke-dashoffset: 113.1;
         transform: rotate(360deg);
-      }
-    }
-
-    @media (max-width: 640px) {
-      .status-container {
-        padding: 2rem 1.25rem;
-        gap: 1.25rem;
-      }
-      .spinner-ring {
-        width: 44px;
-        height: 44px;
-      }
-      .spinner-ring svg {
-        width: 44px;
-        height: 44px;
-      }
-    }
-
-    @media (orientation: landscape) and (max-height: 500px) {
-      .status-container {
-        padding: 1.25rem 1rem;
-        gap: 0.75rem;
-      }
-      .spinner-ring {
-        width: 36px;
-        height: 36px;
-      }
-      .spinner-ring svg {
-        width: 36px;
-        height: 36px;
-      }
-      .status-text {
-        font-size: 0.9rem;
       }
     }
   `;

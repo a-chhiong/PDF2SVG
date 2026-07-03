@@ -23,15 +23,16 @@ export class ModeSwitcher extends LitElement {
     .seg-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: var(--mode-switcher-btn-justify);
       gap: clamp(3px, 0.5vw, 6px);
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: clamp(0.3rem, 0.5vw, 0.5rem) clamp(0.5rem, 1vw, 1rem);
+      padding: var(--mode-switcher-btn-padding);
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
       font-weight: 600;
-      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+      font-size: var(--mode-switcher-btn-font-size);
       cursor: pointer;
       transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
       white-space: nowrap;
@@ -40,9 +41,13 @@ export class ModeSwitcher extends LitElement {
       -webkit-tap-highlight-color: transparent;
     }
 
+    .seg-btn span {
+      display: var(--mode-switcher-span-display);
+    }
+
     .seg-btn svg {
-      width: clamp(15px, 1.3vw, 18px);
-      height: clamp(15px, 1.3vw, 18px);
+      width: var(--mode-switcher-btn-svg-size);
+      height: var(--mode-switcher-btn-svg-size);
       opacity: 0.7;
       transition: opacity 0.2s ease, transform 0.2s ease;
       stroke-linecap: round;
@@ -73,29 +78,6 @@ export class ModeSwitcher extends LitElement {
       opacity: 1;
       filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
     }
-
-    @media (max-width: 480px) {
-      .segmented-control {
-        width: 100%;
-      }
-      .seg-btn {
-        flex: 1;
-        justify-content: center;
-        font-size: 0.78rem;
-        padding: 0.5rem 0.6rem;
-      }
-      .seg-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-    }
-
-    @media (orientation: landscape) and (max-height: 500px) {
-      .seg-btn {
-        padding: 0.35rem 0.75rem;
-        font-size: 0.78rem;
-      }
-    }
   `;
 
   constructor() {
@@ -109,6 +91,8 @@ export class ModeSwitcher extends LitElement {
         <button
           class="seg-btn ${this.mode === 'live' ? 'active' : ''}"
           @click=${this._setLive}
+          aria-label="Editable Text"
+          title="Editable Text"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -122,6 +106,8 @@ export class ModeSwitcher extends LitElement {
         <button
           class="seg-btn ${this.mode === 'vector' ? 'active' : ''}"
           @click=${this._setVector}
+          aria-label="Vector Outlines"
+          title="Vector Outlines"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="12 2 2 7 12 12 22 7 12 2"/>

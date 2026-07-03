@@ -5,6 +5,7 @@
    ============================================================ */
 
 @import './theme.css';
+@import './layout.css';
 
 /* --- Reset & Base --- */
 *, *::before, *::after {
