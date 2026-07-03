@@ -1,6 +1,52 @@
 import { css } from 'lit';
 
 /**
+ * Shared keyframe animations.
+ * Import and spread into any component that needs them.
+ */
+export const animations = css`
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes app-loader-spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+/**
+ * Unstyled component reset — strips default host display so the
+ * component can be used inline. Apply to any component that should
+ * not force a block-level display.
+ */
+export const hostReset = css`
+  :host {
+    display: block;
+  }
+`;
+
+/**
  * Button base styles — shared across any component that renders
  * buttons matching the app's design language.
  */
@@ -124,5 +170,17 @@ export const utilities = css`
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.4s ease forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease forwards;
   }
 `;

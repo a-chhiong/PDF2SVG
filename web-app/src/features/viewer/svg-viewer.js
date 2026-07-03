@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { buttonBase } from '../../components/shared-styles.js';
+import { buttonBase } from '../../styles/shared-styles.js';
 import './svg-item.js';
 
 export class SvgViewer extends LitElement {
@@ -26,16 +26,10 @@ export class SvgViewer extends LitElement {
 
       .svg-viewer-header {
         display: flex;
-        flex-direction: var(--svg-viewer-header-flex-dir);
         justify-content: space-between;
-        align-items: var(--svg-viewer-header-align);
+        align-items: center;
         gap: 1rem;
         flex-wrap: wrap;
-      }
-
-      .svg-viewer-header .btn {
-        justify-content: var(--svg-viewer-header-btn-justify);
-        width: var(--svg-viewer-header-btn-width);
       }
 
       .svg-viewer-header h2 {
@@ -68,6 +62,17 @@ export class SvgViewer extends LitElement {
         display: flex;
         flex-direction: column;
         gap: clamp(0.6rem, 1vw, 1rem);
+      }
+
+      @media (max-width: 560px) {
+        .svg-viewer-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .svg-viewer-header .btn {
+          justify-content: center;
+          width: 100%;
+        }
       }
     `
   ];
